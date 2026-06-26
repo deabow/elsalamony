@@ -29,10 +29,10 @@ export async function GET() {
     });
 
     // Clean Prisma Decimals for JSON serialization
-    const serializedOrders = orders.map((order) => ({
+    const serializedOrders = orders.map((order: any) => ({
       ...order,
       total_price: Number(order.total_price),
-      items: order.items.map((item) => ({
+      items: order.items.map((item: any) => ({
         ...item,
         subtotal: Number(item.subtotal),
       })),
