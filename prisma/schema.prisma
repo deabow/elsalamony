@@ -1,0 +1,126 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// 1. AUTHENTICATION & RBAC
+// ==========================================
+
+enum Role {
+  ADMIN
+  DESIGNER
+  ACCOUNTANT
+}
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+  role     Role
+}
+
+// ==========================================
+// 2. PRODUCT & DYNAMIC PRICING
+// ==========================================
+
+model Product {
+  id          String          @id @default(uuid())
+  name        String
+  description String
+  base_price  Decimal         @db.Decimal(10, 2)
+  category    String
+  options     ProductOption[]
+  order_items OrderItem[]
+}
+
+model ProductOption {
+  id         String        @id @default(uuid())
+  name       String        // e.g., "Material", "Size"
+  product_id String
+  product    Product       @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  values     OptionValue[]
+}
+
+model OptionValue {
+  id             String            @id @default(uuid())
+  name           String            // e.g., "Glossy", "A4"
+  price_modifier Float             // Price adjustment modifier
+  option_id      String
+  option         ProductOption     @relation(fields: [option_id], references: [id], onDelete: Cascade)
+  chosen_options OrderItemOption[] // Join table references
+}
+
+// ==========================================
+// 3. ORDERS & GUEST SYSTEM
+// ==========================================
+
+enum OrderStatus {
+  PENDING
+  PRINTING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  guest_name  String
+  guest_phone String
+  status      OrderStatus @default(PENDING)
+  total_price Decimal     @db.Decimal(10, 2)
+  created_at  DateTime    @default(now())
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id           String            @id @default(uuid())
+  order_id     String
+  order        Order             @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product_id   String
+  product      Product           @relation(fields: [product_id], references: [id], onDelete: Restrict)
+  quantity     Int
+  subtotal     Decimal           @db.Decimal(10, 2)
+  chosen_value OrderItemOption[] // OptionValues selected for this item
+  design_files DesignFile[]
+
+  // Banner specific dimensions (in meters)
+  banner_width  Float?
+  banner_height Float?
+}
+
+// Explicit Join Table mapping chosen OptionValues to an OrderItem
+model OrderItemOption {
+  order_item_id   String
+  order_item      OrderItem   @relation(fields: [order_item_id], references: [id], onDelete: Cascade)
+  option_value_id String
+  option_value    OptionValue @relation(fields: [option_value_id], references: [id], onDelete: Restrict)
+
+  @@id([order_item_id, option_value_id])
+}
+
+model DesignFile {
+  id            String    @id @default(uuid())
+  order_item_id String
+  order_item    OrderItem @relation(fields: [order_item_id], references: [id], onDelete: Cascade)
+  file_url      String
+  file_name     String
+  uploaded_at   DateTime  @default(now())
+}
+
+// ==========================================
+// 4. CORPORATE PORTAL
+// ==========================================
+
+model CorporateInquiry {
+  id             String   @id @default(uuid())
+  company_name   String
+  contact_person String
+  email          String
+  phone          String
+  details        String
+  created_at     DateTime @default(now())
+}
