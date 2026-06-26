@@ -168,7 +168,7 @@ interface PageProps {
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { id } = await params;
-  
+
   let product = null;
 
   try {
@@ -193,11 +193,12 @@ export default async function ProductDetailPage({ params }: PageProps) {
         basePrice: Number(dbProduct.base_price),
         category: dbProduct.category,
         sku: "PRT-CUST-" + dbProduct.id.substring(0, 5),
-        options: dbProduct.options.map((opt) => ({
+        // options: dbProduct.options.map((opt: any) => ({
+        options: dbProduct.options.map((opt: any) => ({
           id: opt.id,
           name: opt.name,
           isRequired: true,
-          values: opt.values.map((v) => ({
+          values: opt.values.map((v: any) => ({
             id: v.id,
             value: v.name,
             priceModifier: Number(v.price_modifier)
@@ -263,7 +264,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
       {/* Main product setup workspace */}
       <main className="section">
         <div className="container" style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-          
+
           <div className="animate-fade-in">
             <span className="badge badge-printing" style={{ marginBottom: "12px" }}>{product.sku}</span>
             <h1 style={{ fontSize: "38px", fontFamily: "var(--font-heading)" }}>{product.name}</h1>
