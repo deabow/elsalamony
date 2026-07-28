@@ -1,100 +1,111 @@
 import Link from "next/link";
 import Header from "@/components/store/header";
 import Footer from "@/components/store/footer";
+import { 
+  Award, 
+  Zap, 
+  DollarSign, 
+  Palette, 
+  PackageCheck, 
+  Building2, 
+  CreditCard, 
+  ScrollText, 
+  FileText, 
+  BookOpen, 
+  ShieldAlert, 
+  Tag, 
+  Sparkles, 
+  ArrowLeft, 
+  CheckCircle2, 
+  Printer, 
+  MapPin, 
+  Clock, 
+  ChevronLeft 
+} from "lucide-react";
 
-// ── Arabic decorative SVG motif ──
-const ArabicOrnament = () => (
-  <svg width="60" height="16" viewBox="0 0 60 16" fill="none" aria-hidden="true">
-    <path d="M0 8 Q15 0 30 8 Q45 16 60 8" stroke="currentColor" strokeWidth="1.2" fill="none" opacity="0.6" />
-    <circle cx="30" cy="8" r="2.5" fill="currentColor" opacity="0.8" />
-    <circle cx="8" cy="8" r="1.5" fill="currentColor" opacity="0.5" />
-    <circle cx="52" cy="8" r="1.5" fill="currentColor" opacity="0.5" />
-  </svg>
-);
-
-// ── Why choose us – feature cards ──
+// ── Why choose us – feature cards with Lucide icons ──
 const FEATURES = [
   {
-    icon: "🏆",
+    icon: Award,
     title: "جودة تتكلم عن نفسها",
-    desc: "أحبار ألوان CMYK بمعايير عالمية، وتشطيبات مات وجلوس وذهبي بلمسة يد محترفة.",
+    desc: "أحبار ألوان CMYK بمعايير عالمية، وتشطيبات مات وجلوس وذهبي بارز بلمسة احترافية.",
   },
   {
-    icon: "⚡",
+    icon: Zap,
     title: "تسليم سريع ومضمون",
-    desc: "نلتزم بمواعيدك. أغلب الطلبات بتتجهز في 24-72 ساعة حسب النوع والكمية.",
+    desc: "نلتزم بمواعيدك الدقيقة. معظم الطلبات تُجهز في غضون 24 إلى 72 ساعة حسب الكمية.",
   },
   {
-    icon: "💰",
-    title: "أسعار واضحة بدون مفاجآت",
-    desc: "تسعير ديناميكي شفاف — شوف السعر النهائي قبل ما تكمل الطلب بدون رسوم خفية.",
+    icon: DollarSign,
+    title: "أسعار شفافة بدون مفاجآت",
+    desc: "تسعير آلي ودقيق — احسب التكلفة الإجمالية بنفسك قبل إتمام الطلب بكل وضوح.",
   },
   {
-    icon: "🎨",
-    title: "مصممين متخصصين",
-    desc: "فريق تصميم محترف يراجع ملفاتك ويتواصل معاك لو في أي ملاحظة قبل الطباعة.",
+    icon: Palette,
+    title: "مراجعة تصميم مجانية",
+    desc: "فريق من مصممي المطبعة يراجع ملفاتك ويرسل ملاحظات فنية لضمان دقة الألوان والقطع.",
   },
   {
-    icon: "📦",
-    title: "تتبع طلبك لحظة بلحظة",
-    desc: "كل طلب ليه كود تتبع خاص بيه، تقدر تشوف مراحل شغلك من الطباعة للتسليم.",
+    icon: PackageCheck,
+    title: "تتبع حالة الطلب لحظياً",
+    desc: "نظام تتبع ذكي يمنحك التحديثات الفورية من مرحلة تجهيز الملف وحتى التسليم النهائي.",
   },
   {
-    icon: "🏭",
-    title: "خدمات الشركات والمصانع",
-    desc: "بنخدم الشركات الكبيرة بعروض أسعار مخصوصة وفواتير رسمية وكميات ضخمة.",
+    icon: Building2,
+    title: "حلول خاصة للمصانع والشركات",
+    desc: "نخدم المؤسسات والمصانع الكبرى بعروض أسعار بالجملة وفواتير ضريبية معتمدة.",
   },
 ];
 
-// ── Print services – no placeholder prices ──
+// ── Print services ──
 const SERVICES = [
   {
     id: "business-cards",
-    icon: "💳",
-    name: "كروت الشركات",
-    desc: "بزنس كارد على ورق فاخرذهبي أو رولاميلا.",
+    icon: CreditCard,
+    name: "كروت الشركات والبزنس كارد",
+    desc: "كروت شخصية على أوراق مصقولة فاخرة، سلوفان مات/جلوس، أو ذهبي بارز.",
     badge: "الأكثر طلباً",
   },
   {
     id: "roll-ups",
-    icon: "📜",
-    name: "لافتات رول أب",
-    desc: "استاند رول أب عالي الدقة بقاعدة ألمنيوم وحقيبة حمل أنيقة.",
+    icon: ScrollText,
+    name: "بانر ورول أب الفعاليات",
+    desc: "استاندات رول أب عالية الدقة بقاعدة ألمنيوم متينة وحقيبة سفر أنيقة.",
     badge: null,
   },
   {
     id: "brochures",
-    icon: "📋",
-    name: "بروشورات وكتيبات",
-    desc: "بروشورات ملونة أحادية وثنائية ومثلثة الطي على أوراق مصقولة.",
+    icon: FileText,
+    name: "بروشورات وكتالوجات",
+    desc: "مطويات ملونة ثنائية ومثلثة الطي ومجلات تعريفية بالمنتجات والشركات.",
     badge: null,
   },
   {
     id: "logbooks",
-    icon: "📒",
-    name: "دفاتر الشركات",
-    desc: "دفاتر وسجلات مخصوصة بغلاف مطبوع وشعار شركتك بألوان كاملة.",
-    badge: "B2B مميز",
+    icon: BookOpen,
+    name: "دفاتر وسجلات الشركات",
+    desc: "دفاتر إيصالات وسجلات حسينية ومبيعات مخصصة بشعارك وألوانك الخاصة.",
+    badge: "مميز للشركات",
   },
   {
     id: "safety-signs",
-    icon: "⚠️",
-    name: "لوحات السلامة",
-    desc: "لوحات PVC وألمنيوم للمصانع بألوان UV مقاومة للبيئة.",
-    badge: "جديد",
+    icon: ShieldAlert,
+    name: "لوحات السلامة والصحة المهنية",
+    desc: "لوحات PVC وألمنيوم للمصانع والمنشآت بألوان طباعة UV المقاومة للظروف الجوية.",
+    badge: "معتمد للمصانع",
   },
   {
     id: "stickers",
-    icon: "🏷️",
-    name: "ملصقات وأختام",
-    desc: "ملصقات لاصقة عالية الجودة للمنتجات والشحنات والعبوات.",
+    icon: Tag,
+    name: "ملصقات واستيكرات العبوات",
+    desc: "استيكرات لاصقة عالية الجودة ومقاومة للماء للمنتجات والشحنات والتغليف.",
     badge: null,
   },
 ];
 
 export default function StoreHome() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", width: "100%", minHeight: "100vh" }}>
 
       {/* ══════════════════ HEADER ══════════════════ */}
       <Header />
@@ -102,93 +113,167 @@ export default function StoreHome() {
       {/* ══════════════════ HERO SECTION ══════════════════ */}
       <section className="animate-in" style={{
         position: "relative",
-        minHeight: "90vh",
+        minHeight: "85vh",
         display: "flex",
         alignItems: "center",
         overflow: "hidden",
-        padding: "80px 0",
+        padding: "80px 0 100px",
       }}>
 
-        {/* Background decorative elements */}
+        {/* Background decorative liquid light gradients */}
         <div aria-hidden="true" style={{
           position: "absolute", inset: 0, pointerEvents: "none",
           background: `
-            radial-gradient(ellipse 70% 60% at 20% 50%, rgba(212,150,42,0.08) 0%, transparent 60%),
-            radial-gradient(ellipse 50% 40% at 80% 20%, rgba(26,47,92,0.6) 0%, transparent 60%),
-            radial-gradient(ellipse 40% 50% at 60% 80%, rgba(122, 92, 53, 0.06) 0%, transparent 50%)
+            radial-gradient(ellipse 70% 60% at 15% 45%, rgba(245, 184, 55, 0.12) 0%, transparent 65%),
+            radial-gradient(ellipse 50% 50% at 85% 25%, rgba(26, 44, 90, 0.7) 0%, transparent 60%),
+            radial-gradient(ellipse 40% 40% at 60% 85%, rgba(212, 150, 42, 0.08) 0%, transparent 55%)
           `,
         }} />
 
-        {/* Geometric corner ornaments */}
+        {/* Floating backdrop graphic elements */}
         <div aria-hidden="true" style={{
-          position: "absolute", top: "40px", right: "60px",
-          width: "120px", height: "120px",
-          border: "1px solid rgba(244,185,66,0.15)",
+          position: "absolute", top: "50px", right: "5%",
+          width: "140px", height: "140px",
+          border: "1px solid rgba(245,184,55,0.18)",
           borderRadius: "50%",
           display: "flex", alignItems: "center", justifyContent: "center",
+          opacity: 0.7
         }}>
           <div style={{
-            width: "80px", height: "80px",
-            border: "1px solid rgba(244,185,66,0.25)",
+            width: "90px", height: "90px",
+            border: "1px stroke rgba(245,184,55,0.25)",
             borderRadius: "50%",
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "var(--gold-500)", fontSize: "28px",
-          }}>◆</div>
-        </div>
-
-        <div aria-hidden="true" style={{
-          position: "absolute", bottom: "40px", left: "60px",
-          color: "rgba(244,185,66,0.1)", fontSize: "120px", lineHeight: 1,
-          fontFamily: "var(--font-heading)", userSelect: "none",
-        }}>
-          ❖
+            color: "var(--gold-400)", fontSize: "20px",
+          }}>✦</div>
         </div>
 
         <div className="container" style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ maxWidth: "720px", textAlign: "right" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "56px", alignItems: "center" }}>
+            
+            {/* Left Content Column */}
+            <div style={{ textAlign: "right" }}>
 
-            <div className="badge badge-gold animate-in" style={{ marginBottom: "24px", fontSize: "13px" }}>
-              ✦ &nbsp; طباعة راقية — جودة لا تنافس
+              <div className="badge badge-gold animate-in cursor-pointer" style={{ marginBottom: "24px", fontSize: "13px", gap: "8px" }}>
+                <Sparkles size={14} />
+                <span>طباعة فاخرة بمدينة السادات والإسكندرية</span>
+              </div>
+
+              <h1 className="animate-in-2" style={{
+                fontSize: "clamp(36px, 5.5vw, 68px)",
+                fontFamily: "var(--font-heading)",
+                fontWeight: 800,
+                lineHeight: 1.2,
+                marginBottom: "24px",
+                letterSpacing: "-0.01em",
+              }}>
+                اطبع بأعلى{" "}
+                <span className="gradient-gold-text">جودة وأرقى</span>
+                <br />
+                خامات مع مطبعة السلاموني
+              </h1>
+
+              <div className="arabic-divider animate-in-2" style={{ color: "var(--gold-400)", marginBottom: "24px", maxWidth: "340px" }}>
+                <span>◆</span>
+              </div>
+
+              <p className="animate-in-3" style={{
+                fontSize: "17.5px",
+                color: "var(--foreground-muted)",
+                marginBottom: "40px",
+                maxWidth: "620px",
+                lineHeight: 1.85,
+              }}>
+                من كروت البزنس الأنيقة وحتى لافتات المصانع ولوحات السلامة المهنية — نقدم خيارات طباعة رقمية وأوفست فائقة الجودة لخدمة الشركات والأفراد مع ضمان السرعة والتوصيل.
+              </p>
+
+              <div className="animate-in-3" style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
+                <a href="#services" className="btn btn-gold btn-lg cursor-pointer" style={{ gap: "8px" }}>
+                  <Printer size={20} />
+                  <span>اكتشف المنتجات واحسب السعر</span>
+                </a>
+                <Link href="/b2b" className="btn btn-navy btn-lg cursor-pointer" style={{ gap: "8px" }}>
+                  <Building2 size={20} />
+                  <span>بوابة الشركات والمصانع</span>
+                </Link>
+              </div>
+
+              {/* Quick stats ribbon */}
+              <div className="animate-in-3" style={{
+                display: "flex",
+                gap: "28px",
+                marginTop: "48px",
+                paddingTop: "24px",
+                borderTop: "1px solid var(--border)",
+                flexWrap: "wrap",
+              }}>
+                <div>
+                  <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--gold-400)", fontFamily: "var(--font-heading)" }}>+١٥,٠٠٠</div>
+                  <div style={{ fontSize: "12.5px", color: "var(--foreground-subtle)" }}>طلب مطبوع بنجاح</div>
+                </div>
+                <div style={{ width: "1px", height: "40px", background: "var(--border)" }} />
+                <div>
+                  <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--gold-400)", fontFamily: "var(--font-heading)" }}>٩٩.٤٪</div>
+                  <div style={{ fontSize: "12.5px", color: "var(--foreground-subtle)" }}>نسبة رضا العملاء</div>
+                </div>
+                <div style={{ width: "1px", height: "40px", background: "var(--border)" }} />
+                <div>
+                  <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--gold-400)", fontFamily: "var(--font-heading)" }}>فرعين رئيسيين</div>
+                  <div style={{ fontSize: "12.5px", color: "var(--foreground-subtle)" }}>السادات والإسكندرية</div>
+                </div>
+              </div>
+
             </div>
 
-            <h1 className="animate-in-2" style={{
-              fontSize: "clamp(40px, 6vw, 72px)",
-              fontFamily: "var(--font-heading)",
-              fontWeight: 700,
-              lineHeight: 1.2,
-              marginBottom: "24px",
-            }}>
-              اطبع بأعلى{" "}
-              <span className="gradient-gold-text">جودة وأرقى</span>
-              <br />
-              خامات مع مطبعة السلاموني
-            </h1>
+            {/* Right Interactive Card Preview */}
+            <div className="animate-in-3" style={{ position: "relative" }}>
+              <div className="card-premium float-pulse" style={{
+                padding: "36px",
+                background: "linear-gradient(160deg, rgba(18,32,70,0.9) 0%, rgba(8,16,36,0.95) 100%)",
+                boxShadow: "var(--shadow-gold), var(--shadow-lg)",
+                border: "1px solid var(--border-strong)",
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+                  <span className="badge badge-gold">حاسبة الأسعار الفورية</span>
+                  <span style={{ fontSize: "12px", color: "var(--foreground-subtle)" }}>خدمة 24/7</span>
+                </div>
 
-            <div className="arabic-divider animate-in-2" style={{ color: "var(--gold-500)", marginBottom: "24px" }}>
-              <span></span>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "20px" }}>
+                  <div style={{
+                    width: "48px", height: "48px", borderRadius: "12px",
+                    background: "rgba(245,184,55,0.15)", border: "1px solid var(--border-strong)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    color: "var(--gold-400)"
+                  }}>
+                    <CreditCard size={24} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: "18px", color: "var(--foreground)", margin: 0 }}>كروت شخصية فاخرة</h3>
+                    <p style={{ fontSize: "13px", color: "var(--foreground-subtle)", margin: 0 }}>ورق كوشيه 350 جرام + سلوفان</p>
+                  </div>
+                </div>
+
+                <div style={{ background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid var(--border)", marginBottom: "20px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13.5px", marginBottom: "8px" }}>
+                    <span style={{ color: "var(--foreground-subtle)" }}>الكمية المحددة:</span>
+                    <span style={{ fontWeight: 700, color: "var(--gold-300)" }}>1,000 كارت</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13.5px", marginBottom: "8px" }}>
+                    <span style={{ color: "var(--foreground-subtle)" }}>نوع التشطيب:</span>
+                    <span style={{ fontWeight: 700, color: "var(--gold-300)" }}>سلوفان مات وجهين</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13.5px" }}>
+                    <span style={{ color: "var(--foreground-subtle)" }}>زمن التسليم المتوقع:</span>
+                    <span style={{ fontWeight: 700, color: "var(--status-delivered-text)" }}>خلال 48 ساعة</span>
+                  </div>
+                </div>
+
+                <Link href="/products/business-cards" className="btn btn-gold cursor-pointer" style={{ width: "100%", justifyContent: "center" }}>
+                  <span>احسب السعر واطلب الآن</span>
+                  <ArrowLeft size={16} />
+                </Link>
+              </div>
             </div>
-
-            <p className="animate-in-3" style={{
-              fontSize: "18px",
-              color: "var(--foreground-muted)",
-              marginBottom: "40px",
-              maxWidth: "600px",
-              lineHeight: 1.8,
-            }}>
-              من كروت الشركات وحتى لافتات المصانع — بنقدم خدمة طباعة احترافية
-              بأسعار تنافسية وتسليم سريع. ارفع ملفك دلوقتي واترك الباقي علينا.
-            </p>
-
-            <div className="animate-in-3" style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-              <a href="#services" className="btn btn-gold btn-lg">
-                🖨️&nbsp; اكتشف منتجاتنا
-              </a>
-              <Link href="/b2b" className="btn btn-navy btn-lg">
-                🏢&nbsp; بوابة الشركات
-              </Link>
-            </div>
-
-            {/* Quick stats */}
 
           </div>
         </div>
@@ -201,50 +286,57 @@ export default function StoreHome() {
       <section id="services" className="section">
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: "64px" }}>
-            <div className="badge badge-gold" style={{ marginBottom: "16px" }}>منتجاتنا اللي بنتميز بيها</div>
+            <div className="badge badge-gold" style={{ marginBottom: "16px", gap: "6px" }}>
+              <Printer size={14} />
+              <span>خدماتنا الأساسية</span>
+            </div>
             <h2 style={{ fontSize: "clamp(28px, 4vw, 44px)", marginBottom: "16px" }}>
-              خدمات الطباعة اللي نقدمها
+              تصفح خدمات الطباعة المتاحة
             </h2>
-            <div className="arabic-divider" style={{ color: "var(--gold-500)", maxWidth: "300px", margin: "0 auto 20px" }}>
+            <div className="arabic-divider" style={{ color: "var(--gold-400)", maxWidth: "300px", margin: "0 auto 20px" }}>
               <span>◆</span>
             </div>
-            <p style={{ color: "var(--foreground-muted)", fontSize: "16px", maxWidth: "560px", margin: "0 auto" }}>
-              اختار المنتج المناسب، حدد المواصفات اللي تناسبك، وارفع الملف —
-              والباقي علينا بضمان الجودة
+            <p style={{ color: "var(--foreground-muted)", fontSize: "16.5px", maxWidth: "580px", margin: "0 auto", lineHeight: 1.8 }}>
+              حدد المنتج، اضبط مقاساتك وكمياتك بمرونة، واحصل على سعر فوري وشفاف قبل تقديم طلبك.
             </p>
           </div>
 
           <div className="grid grid-3">
-            {SERVICES.map((svc) => (
-              <div key={svc.id} className="card-premium ornament-card gold-top" style={{ display: "flex", flexDirection: "column" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
-                  <div style={{
-                    width: "52px", height: "52px",
-                    background: "rgba(244, 185, 66, 0.1)",
-                    border: "1px solid var(--border-strong)",
-                    borderRadius: "12px",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: "24px",
-                  }}>
-                    {svc.icon}
+            {SERVICES.map((svc) => {
+              const IconComp = svc.icon;
+              return (
+                <div key={svc.id} className="card-premium ornament-card gold-top cursor-pointer" style={{ display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "22px" }}>
+                    <div style={{
+                      width: "54px", height: "54px",
+                      background: "rgba(245, 184, 55, 0.12)",
+                      border: "1px solid var(--border-strong)",
+                      borderRadius: "14px",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "var(--gold-400)",
+                      boxShadow: "0 4px 14px rgba(245, 184, 55, 0.15)",
+                    }}>
+                      <IconComp size={26} />
+                    </div>
+                    {svc.badge && (
+                      <span className="badge badge-gold" style={{ fontSize: "11.5px" }}>{svc.badge}</span>
+                    )}
                   </div>
-                  {svc.badge && (
-                    <span className="badge badge-gold" style={{ fontSize: "11px" }}>{svc.badge}</span>
-                  )}
+                  <h3 style={{ fontSize: "20px", marginBottom: "12px", fontFamily: "var(--font-heading)" }}>
+                    {svc.name}
+                  </h3>
+                  <p style={{ color: "var(--foreground-muted)", fontSize: "14.5px", lineHeight: 1.8, flex: 1 }}>
+                    {svc.desc}
+                  </p>
+                  <div style={{ borderTop: "1px solid var(--border)", paddingTop: "20px", marginTop: "24px" }}>
+                    <Link href={`/products/${svc.id}`} className="btn btn-outline-gold btn-sm cursor-pointer" style={{ width: "100%", justifyContent: "center" }}>
+                      <span>تحديد المواصفات والسعر</span>
+                      <ChevronLeft size={16} />
+                    </Link>
+                  </div>
                 </div>
-                <h3 style={{ fontSize: "20px", marginBottom: "10px", fontFamily: "var(--font-heading)" }}>
-                  {svc.name}
-                </h3>
-                <p style={{ color: "var(--foreground-muted)", fontSize: "14px", lineHeight: 1.8, flex: 1 }}>
-                  {svc.desc}
-                </p>
-                <div style={{ borderTop: "1px solid var(--border)", paddingTop: "20px", marginTop: "20px" }}>
-                  <Link href={`/products/${svc.id}`} className="btn btn-outline-gold btn-sm" style={{ width: "100%" }}>
-                    اطلب دلوقتي ←
-                  </Link>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -253,24 +345,37 @@ export default function StoreHome() {
       <div className="divider-gold" />
 
       {/* ══════════════════ WHY US SECTION ══════════════════ */}
-      <section className="section" style={{ background: "var(--gradient-bg-navy)" }}>
+      <section className="section" style={{ background: "var(--gradient-bg-navy)", position: "relative" }}>
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: "64px" }}>
             <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", marginBottom: "12px" }}>
-              ليه مطبعة السلاموني؟
+              لماذا تختار مطبعة السلاموني؟
             </h2>
-            <div className="arabic-divider" style={{ color: "var(--gold-500)", maxWidth: "280px", margin: "0 auto" }}>
+            <div className="arabic-divider" style={{ color: "var(--gold-400)", maxWidth: "280px", margin: "0 auto" }}>
               <span>✦</span>
             </div>
           </div>
           <div className="grid grid-3">
-            {FEATURES.map((f, i) => (
-              <div key={i} className="card" style={{ textAlign: "right" }}>
-                <div style={{ fontSize: "36px", marginBottom: "16px" }}>{f.icon}</div>
-                <h3 style={{ fontSize: "18px", marginBottom: "10px", color: "var(--gold-300)" }}>{f.title}</h3>
-                <p style={{ color: "var(--foreground-muted)", fontSize: "14px", lineHeight: 1.8 }}>{f.desc}</p>
-              </div>
-            ))}
+            {FEATURES.map((f, i) => {
+              const FIcon = f.icon;
+              return (
+                <div key={i} className="card cursor-pointer" style={{ textAlign: "right" }}>
+                  <div style={{
+                    width: "48px", height: "48px",
+                    borderRadius: "12px",
+                    background: "rgba(245, 184, 55, 0.1)",
+                    border: "1px solid var(--border)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    color: "var(--gold-400)",
+                    marginBottom: "20px"
+                  }}>
+                    <FIcon size={24} />
+                  </div>
+                  <h3 style={{ fontSize: "19px", marginBottom: "10px", color: "var(--gold-300)", fontFamily: "var(--font-heading)" }}>{f.title}</h3>
+                  <p style={{ color: "var(--foreground-muted)", fontSize: "14.5px", lineHeight: 1.8 }}>{f.desc}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -278,7 +383,7 @@ export default function StoreHome() {
       {/* ══════════════════ DIVIDER ══════════════════ */}
       <div className="divider-gold" />
 
-      {/* ══════════════════ B2B SECTION ══════════════════ */}
+      {/* ══════════════════ B2B CORPORATE SECTION ══════════════════ */}
       <section className="section">
         <div className="container">
           <div style={{
@@ -292,63 +397,47 @@ export default function StoreHome() {
             alignItems: "center",
             position: "relative",
             overflow: "hidden",
+            boxShadow: "var(--shadow-lg)",
           }}>
-            {/* Decorative background */}
-            <div aria-hidden="true" style={{
-              position: "absolute", top: "-40px", left: "-40px",
-              width: "200px", height: "200px",
-              border: "1px solid rgba(244,185,66,0.1)",
-              borderRadius: "50%", pointerEvents: "none",
-            }} />
-            <div aria-hidden="true" style={{
-              position: "absolute", bottom: "-60px", right: "-60px",
-              width: "240px", height: "240px",
-              border: "1px solid rgba(244,185,66,0.08)",
-              borderRadius: "50%", pointerEvents: "none",
-            }} />
-
             <div style={{ position: "relative", zIndex: 1 }}>
-              <div className="badge badge-gold" style={{ marginBottom: "20px" }}>
-                🏢 &nbsp; خدمات الشركات والمصانع
+              <div className="badge badge-gold" style={{ marginBottom: "20px", gap: "6px" }}>
+                <Building2 size={15} />
+                <span>قطاع الشركات والمصانع B2B</span>
               </div>
-              <h2 style={{ fontSize: "clamp(24px, 3vw, 36px)", marginBottom: "16px" }}>
-                محتاج طباعة بالجملة أو عرض سعر مخصوص؟
+              <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", marginBottom: "18px", lineHeight: 1.3 }}>
+                هل تحتاج إلى طباعات ضخمة أو تعاقد دوري لمؤسستك؟
               </h2>
-              <p style={{ color: "var(--foreground-muted)", fontSize: "15px", lineHeight: 1.9, marginBottom: "32px" }}>
-                بنخدم المصانع والشركات والمدارس بعروض أسعار تنافسية،
-                فواتير رسمية، وكميات ضخمة. ابعت استفسارك دلوقتي وهنرد عليك في أسرع وقت.
+              <p style={{ color: "var(--foreground-muted)", fontSize: "15.5px", lineHeight: 1.9, marginBottom: "32px" }}>
+                نوفر خدمات الطباعة المتكاملة للمصانع والشركات الكبرى بمدينة السادات والإسكندرية: فواتير ضريبية رسمية، تخصيص درجات الألوان المعيارية، وعروض أسعار تنافسية للكميات.
               </p>
-              <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-                <Link href="/b2b" className="btn btn-gold">
-                  سجل استفسار الشركة →
+              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+                <Link href="/b2b" className="btn btn-gold cursor-pointer" style={{ gap: "8px" }}>
+                  <span>تقديم طلب عرض سعر للشركات</span>
+                  <ArrowLeft size={16} />
                 </Link>
-                <Link href="/order-tracking" className="btn btn-ghost">
-                  تتبع طلبي
+                <Link href="/branches" className="btn btn-ghost cursor-pointer" style={{ gap: "8px" }}>
+                  <MapPin size={16} />
+                  <span>زيارة أحد فروعنا</span>
                 </Link>
               </div>
             </div>
 
             <div style={{ position: "relative", zIndex: 1 }}>
-              <div style={{
-                background: "rgba(5, 12, 26, 0.6)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-md)",
-                padding: "28px",
-              }}>
-                <h3 style={{ marginBottom: "20px", fontSize: "17px", color: "var(--gold-300)" }}>
-                  إزاي بتشتغل خدمة الشركات؟
+              <div className="glass-panel" style={{ padding: "32px", border: "1px solid var(--border-strong)" }}>
+                <h3 style={{ marginBottom: "22px", fontSize: "18px", color: "var(--gold-300)", fontFamily: "var(--font-heading)" }}>
+                  خطوات التعاقد وسير العمل
                 </h3>
-                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                   {[
-                    { step: "١", text: "ابعت متطلباتك — الكميات، المقاسات، الديزاين" },
-                    { step: "٢", text: "بنراجع الملفات ونبعتلك عرض سعر تفصيلي" },
-                    { step: "٣", text: "بعد الموافقة، نبدأ الطباعة ونسلمك في الموعد" },
+                    { step: "١", title: "طلب المواصفات", text: "إرسال ملفات التصميم والكميات المطلوبة عبر البوابة" },
+                    { step: "٢", title: "عرض السعر والعينات", text: "مراجعة فنية وإصدار عرض سعر رسمي مع عينات خامات" },
+                    { step: "٣", title: "الطباعة والتوريد", text: "بدء الإنتاج والتسليم المباشر لمقر شركتك أو مصنعك" },
                   ].map((s) => (
-                    <div key={s.step} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <div key={s.step} style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}>
                       <div style={{
-                        width: "34px", height: "34px",
-                        background: "rgba(244, 185, 66, 0.15)",
-                        border: "1px solid var(--gold-600)",
+                        width: "36px", height: "36px",
+                        background: "rgba(245, 184, 55, 0.15)",
+                        border: "1px solid var(--gold-500)",
                         borderRadius: "50%",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: "14px", fontWeight: 800, color: "var(--gold-400)",
@@ -356,7 +445,10 @@ export default function StoreHome() {
                       }}>
                         {s.step}
                       </div>
-                      <span style={{ fontSize: "14px", color: "var(--foreground-muted)" }}>{s.text}</span>
+                      <div>
+                        <div style={{ fontSize: "15px", fontWeight: 700, color: "var(--foreground)" }}>{s.title}</div>
+                        <div style={{ fontSize: "13.5px", color: "var(--foreground-muted)", lineHeight: 1.6 }}>{s.text}</div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -373,11 +465,15 @@ export default function StoreHome() {
         textAlign: "center",
       }}>
         <div className="container">
-          <p style={{ color: "var(--foreground-muted)", marginBottom: "16px", fontSize: "15px" }}>
-            عندك طلب وعايز تتابع حالته؟
+          <h3 style={{ fontSize: "20px", marginBottom: "12px", color: "var(--foreground)" }}>
+            تريد متابعة طلب قائمة بالطباعة؟
+          </h3>
+          <p style={{ color: "var(--foreground-muted)", marginBottom: "24px", fontSize: "15px" }}>
+            أدخل كود الطلب الخاص بك لاستعراض المرحلة الحالية مباشرة
           </p>
-          <Link href="/order-tracking" className="btn btn-navy">
-            📦 &nbsp; تتبع طلبي بكود الطلب
+          <Link href="/order-tracking" className="btn btn-navy cursor-pointer" style={{ gap: "8px" }}>
+            <PackageCheck size={18} />
+            <span>تتبع طلبي الآن بواسطة كود التتبع</span>
           </Link>
         </div>
       </section>

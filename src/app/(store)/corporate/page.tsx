@@ -199,7 +199,7 @@ export default function CorporatePortalPage() {
                       id="corp-email"
                       type="email"
                       className="form-control ltr"
-                      placeholder="procurement@company.com"
+                      placeholder="elsalamony.press@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />

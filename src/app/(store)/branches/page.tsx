@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Header from "@/components/store/header";
 import Footer from "@/components/store/footer";
-import { MapPin, Phone, ExternalLink } from "lucide-react";
+import { MapPin, Phone, ExternalLink, Clock } from "lucide-react";
 
 // Branches details
 const BRANCHES = [
@@ -200,8 +200,9 @@ export default function BranchesPage() {
                     marginTop: "8px",
                     textAlign: "center",
                   }}>
-                    <span style={{ fontSize: "13px", color: "var(--foreground-subtle)" }}>
-                      🕒 مواعيد العمل
+                    <span style={{ fontSize: "13px", color: "var(--foreground-subtle)", display: "flex", alignItems: "center", gap: "6px" }}>
+                      <Clock size={16} style={{ color: "var(--gold-400)" }} />
+                      مواعيد العمل
                     </span>
                     <span style={{ fontSize: "14px", color: "var(--foreground-muted)" }}>
                       {b.workingHours}
