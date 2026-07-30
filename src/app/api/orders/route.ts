@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     const guest_name = (formData.get("guest_name") as string || "").trim();
     const guest_phone = (formData.get("guest_phone") as string || "").trim();
     const itemsJson = formData.get("items") as string || "";
-    
+
     // Extract binary files from FormData
     const rawFiles = formData.getAll("design_files");
     const designFiles: File[] = rawFiles.filter((f): f is File => f instanceof File && f.size > 0);
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     );
 
     // 4. DATABASE STEP (FAST ATOMIC TRANSACTION)
-    const createdOrder = await prisma.$transaction(async (tx) => {
+    const createdOrder = await prisma.$transaction(async (tx: any) => {
       // Create initial order record with zero total price
       const order = await tx.order.create({
         data: {
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
         }, 0);
 
         const unitCost = Number(dbProduct.base_price) + sumModifiers;
-        
+
         // Dynamic square-meter pricing logic for banners
         const isBanner = dbProduct.category.toLowerCase() === "banners";
         let itemSubtotal = 0;
