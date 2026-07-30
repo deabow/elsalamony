@@ -18,9 +18,9 @@ export async function POST(request: Request) {
     } = body;
 
     // Validation
-    if (!companyName || !contactName || !contactPhone || !contactEmail || !productType || !quantity) {
+    if (!companyName || !contactName || !contactPhone || !productType || !quantity) {
       return NextResponse.json(
-        { message: "Company Name, Contact Name, Phone, Email, Product Type, and Quantity are required." },
+        { message: "Company Name, Contact Name, Phone, Product Type, and Quantity are required." },
         { status: 400 }
       );
     }

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import React from "react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
@@ -102,8 +103,8 @@ export default async function DashboardOverview() {
 
   const workflowStages = [
     { label: "⌛ بانتظار ما قبل الطباعة (Pre-Press)", status: "pending", count: stats.pendingPayments },
-    { label: "⚙️ جارٍ تحميلها على الماكينة",           status: "printing", count: Math.max(0, stats.activeJobs - stats.pendingPayments) },
-    { label: "📦 جاهزة للاستلام / التسليم",             status: "ready",    count: 0 },
+    { label: "⚙️ جارٍ تحميلها على الماكينة", status: "printing", count: Math.max(0, stats.activeJobs - stats.pendingPayments) },
+    { label: "📦 جاهزة للاستلام / التسليم", status: "ready", count: 0 },
   ];
 
   return (
@@ -180,9 +181,9 @@ export default async function DashboardOverview() {
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {[
               { time: "منذ 10 دقائق", text: "تم رفع إيصال دفع فودافون كاش لطلب #ord-8372", type: "payment" },
-              { time: "منذ ساعة",    text: "استفسار B2B جديد من مصنع حديد الإسكندرية", type: "b2b" },
+              { time: "منذ ساعة", text: "استفسار B2B جديد من مصنع حديد الإسكندرية", type: "b2b" },
               { time: "منذ ساعتين", text: "طلب #ord-3829 تم تحديث حالته إلى «جارٍ الطباعة»", type: "status" },
-              { time: "أمس",        text: "تم تسليم طلب #ord-2210 للعميل بنجاح", type: "delivered" },
+              { time: "أمس", text: "تم تسليم طلب #ord-2210 للعميل بنجاح", type: "delivered" },
             ].map((a, idx, arr) => (
               <div key={idx} style={{
                 display: "flex",
@@ -205,9 +206,9 @@ export default async function DashboardOverview() {
         <div className="grid grid-4">
           {[
             { href: "/dashboard/catalog", icon: "➕", label: "إضافة منتج جديد" },
-            { href: "/dashboard/orders",  icon: "📦", label: "عرض الطلبات المعلقة" },
-            { href: "/dashboard/payments",icon: "✅", label: "مراجعة الإيصالات" },
-            { href: "/dashboard/b2b",     icon: "🏢", label: "استفسارات الشركات" },
+            { href: "/dashboard/orders", icon: "📦", label: "عرض الطلبات المعلقة" },
+            { href: "/dashboard/payments", icon: "✅", label: "مراجعة الإيصالات" },
+            { href: "/dashboard/b2b", icon: "🏢", label: "استفسارات الشركات" },
           ].map((qa) => (
             <Link
               key={qa.href}

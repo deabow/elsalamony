@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server";
-import formidable from "formidable";
-import { IncomingMessage } from "http";
-import { Socket } from "net";
 import prisma from "@/lib/prisma";
-
-
 import { v2 as cloudinary } from "cloudinary";
 
 // Configure Cloudinary from environment variables
@@ -14,103 +9,96 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Upload helper streaming files to Cloudinary
-async function uploadFile(file: formidable.File): Promise<string> {
-  try {
-    const result = await cloudinary.uploader.upload(file.filepath, {
-      resource_type: "auto",
-      folder: "elsalamony-orders",
-    });
-    return result.secure_url;
-  } catch (error) {
-    console.error("Cloudinary upload failure inside order route:", error);
-    const secureHash = Math.random().toString(36).substring(2, 15);
-    const fileName = file.originalFilename || "design-asset";
-    return `https://elsalamony-bucket.s3.amazonaws.com/uploads/${secureHash}-${fileName}`;
-  }
+interface ParsedItem {
+  product_id: string;
+  quantity: number;
+  options: string[]; // option_value_ids
+  file_indices?: number[]; // indices mapping to the uploaded design_files array
+  banner_width?: number;
+  banner_height?: number;
 }
 
-// Convert Next.js Web Request into Node.js readable IncomingMessage stream for Formidable parsing
-async function parseRequestForm(request: Request): Promise<{ fields: formidable.Fields; files: formidable.Files }> {
-  const arrayBuffer = await request.arrayBuffer();
-  
-  const socket = new Socket();
-  const incomingMessage = new IncomingMessage(socket);
-  
-  // Map Request headers to IncomingMessage headers
-  request.headers.forEach((val, key) => {
-    incomingMessage.headers[key.toLowerCase()] = val;
-  });
-  
-  incomingMessage.push(Buffer.from(arrayBuffer));
-  incomingMessage.push(null); // EOF flag for stream
-
-  const form = formidable({
-    multiples: true,
-    keepExtensions: true,
-  });
+/**
+ * Upload helper streaming Web API File to Cloudinary.
+ * Executed OUTSIDE database transactions.
+ */
+async function uploadFileToCloudinary(file: File): Promise<{ url: string; name: string }> {
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
 
   return new Promise((resolve, reject) => {
-    form.parse(incomingMessage, (err, fields, files) => {
-      if (err) reject(err);
-      else resolve({ fields, files });
-    });
+    cloudinary.uploader.upload_stream(
+      {
+        resource_type: "auto",
+        folder: "elsalamony-orders",
+      },
+      (error, result) => {
+        if (error || !result) {
+          console.error("Cloudinary upload_stream error:", error);
+          reject(error || new Error("فشل رفع الملف إلى Cloudinary"));
+        } else {
+          resolve({
+            url: result.secure_url,
+            name: file.name || "design-asset",
+          });
+        }
+      }
+    ).end(buffer);
   });
 }
-
-// Helper utilities to parse formidable v3 field formats cleanly
-const getSingleField = (fieldOrFields: string | string[] | undefined): string => {
-  if (!fieldOrFields) return "";
-  return Array.isArray(fieldOrFields) ? fieldOrFields[0] : fieldOrFields;
-};
-
-const getArrayOfFiles = (fileOrFiles: formidable.File | formidable.File[] | undefined): formidable.File[] => {
-  if (!fileOrFiles) return [];
-  return Array.isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
-};
 
 export async function POST(request: Request) {
   try {
-    // 1. Process Multipart Form Data using formidable
-    const { fields, files } = await parseRequestForm(request);
+    // 1. Process Multipart Form Data natively using Web Request API
+    const formData = await request.formData();
 
-    const guest_name = getSingleField(fields.guest_name);
-    const guest_phone = getSingleField(fields.guest_phone);
-    const itemsJson = getSingleField(fields.items);
-    const allFiles = getArrayOfFiles(files.design_files);
+    const guest_name = (formData.get("guest_name") as string || "").trim();
+    const guest_phone = (formData.get("guest_phone") as string || "").trim();
+    const itemsJson = formData.get("items") as string || "";
+    
+    // Extract binary files from FormData
+    const rawFiles = formData.getAll("design_files");
+    const designFiles: File[] = rawFiles.filter((f): f is File => f instanceof File && f.size > 0);
 
-    // 2. Validate mandatory guest information
-    if (!guest_name.trim() || !guest_phone.trim()) {
+    // 2. Validate mandatory guest & payload information
+    if (!guest_name || !guest_phone) {
       return NextResponse.json(
-        { message: "Guest Name and Guest Phone Number are mandatory." },
+        { message: "اسم العميل ورقم الهاتف مطلوبان لاستكمال الطلب." },
         { status: 400 }
       );
     }
 
     if (!itemsJson) {
       return NextResponse.json(
-        { message: "Items list JSON payload is required." },
+        { message: "بيانات عناصر الطلب (JSON) مطلوبة." },
         { status: 400 }
       );
     }
 
-    const parsedItems = JSON.parse(itemsJson) as Array<{
-      product_id: string;
-      quantity: number;
-      options: string[]; // option_value_ids
-      file_indices?: number[]; // indices mapping to the allFiles array
-      banner_width?: number;
-      banner_height?: number;
-    }>;
+    let parsedItems: ParsedItem[] = [];
+    try {
+      parsedItems = JSON.parse(itemsJson) as ParsedItem[];
+    } catch {
+      return NextResponse.json(
+        { message: "صيغة عناصر الطلب (JSON) غير صالحة." },
+        { status: 400 }
+      );
+    }
 
     if (!parsedItems || parsedItems.length === 0) {
       return NextResponse.json(
-        { message: "Order must contain at least one item." },
+        { message: "يجب أن يحتوي الطلب على عنصر واحد على الأقل." },
         { status: 400 }
       );
     }
 
-    // 3. Database Write operation enclosed in atomic transaction
+    // 3. NETWORK STEP (OUTSIDE DATABASE TRANSACTION)
+    // Upload all files asynchronously to Cloudinary before touching Prisma
+    const uploadedFiles: Array<{ url: string; name: string }> = await Promise.all(
+      designFiles.map((file) => uploadFileToCloudinary(file))
+    );
+
+    // 4. DATABASE STEP (FAST ATOMIC TRANSACTION)
     const createdOrder = await prisma.$transaction(async (tx) => {
       // Create initial order record with zero total price
       const order = await tx.order.create({
@@ -124,7 +112,6 @@ export async function POST(request: Request) {
 
       let computedOrderTotal = 0;
 
-      // Loop through items, calculate cost from database source of truth, and write entries
       for (const item of parsedItems) {
         // Query product base price directly inside transaction
         const dbProduct = await tx.product.findUnique({
@@ -132,10 +119,10 @@ export async function POST(request: Request) {
         });
 
         if (!dbProduct) {
-          throw new Error(`Product not found in catalog: ${item.product_id}`);
+          throw new Error(`المنتج غير موجود في الكتالوج: ${item.product_id}`);
         }
 
-        // Query selected option values modifiers directly inside transaction
+        // Query selected option values modifiers
         const dbOptionValues = await tx.optionValue.findMany({
           where: { id: { in: item.options } },
         });
@@ -177,7 +164,7 @@ export async function POST(request: Request) {
         });
 
         // Create OrderItemOption chosen values mapping
-        if (item.options.length > 0) {
+        if (item.options && item.options.length > 0) {
           await tx.orderItemOption.createMany({
             data: item.options.map((valId) => ({
               order_item_id: orderItem.id,
@@ -186,20 +173,21 @@ export async function POST(request: Request) {
           });
         }
 
-        // Save files associated with this item
+        // Create DesignFile records using pre-uploaded Cloudinary URLs
         if (item.file_indices && item.file_indices.length > 0) {
-          for (const index of item.file_indices) {
-            const formidableFile = allFiles[index];
-            if (formidableFile) {
-              const uploadedUrl = await uploadFile(formidableFile);
-              await tx.designFile.create({
-                data: {
-                  order_item_id: orderItem.id,
-                  file_url: uploadedUrl,
-                  file_name: formidableFile.originalFilename || "design-asset",
-                },
-              });
-            }
+          const designFilesData = item.file_indices
+            .map((idx) => uploadedFiles[idx])
+            .filter((f): f is { url: string; name: string } => Boolean(f))
+            .map((f) => ({
+              order_item_id: orderItem.id,
+              file_url: f.url,
+              file_name: f.name,
+            }));
+
+          if (designFilesData.length > 0) {
+            await tx.designFile.createMany({
+              data: designFilesData,
+            });
           }
         }
       }
@@ -242,7 +230,7 @@ export async function POST(request: Request) {
     console.error("API Order checkout failure:", error);
     return NextResponse.json(
       {
-        message: "Failed to process multipart guest checkout order.",
+        message: "فشل في معالجة طلب الخدمة وتنفيذ العملية.",
         error: error.message || "Unknown internal error",
       },
       { status: 500 }

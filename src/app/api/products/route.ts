@@ -1,7 +1,24 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
+
+const ALLOWED_ROLES = ["ADMIN", "DESIGNER", "ACCOUNTANT"];
+
+async function verifyAuth() {
+  const session = await getServerSession(authOptions);
+  const userRole = session?.user?.role;
+
+  if (!session || !userRole || !ALLOWED_ROLES.includes(userRole)) {
+    return NextResponse.json(
+      { message: "غير مصرح لك بالوصول" },
+      { status: 401 }
+    );
+  }
+  return null;
+}
 
 // Zod Validation Schema
 const createProductSchema = z.object({
@@ -24,6 +41,9 @@ const createProductSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const authResponse = await verifyAuth();
+  if (authResponse) return authResponse;
+
   try {
     const body = await request.json();
     
@@ -104,6 +124,9 @@ export async function GET() {
 }
 
 export async function DELETE(request: Request) {
+  const authResponse = await verifyAuth();
+  if (authResponse) return authResponse;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -129,6 +152,9 @@ export async function DELETE(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const authResponse = await verifyAuth();
+  if (authResponse) return authResponse;
+
   try {
     const body = await request.json();
     const { id, name, description, base_price, category } = body;

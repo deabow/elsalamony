@@ -1,9 +1,31 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 
+const ALLOWED_ROLES = ["ADMIN", "DESIGNER", "ACCOUNTANT"];
 const VALID_STATUSES = ["PENDING", "PRINTING", "READY", "DELIVERED", "CANCELLED"];
 
+/**
+ * Helper to check NextAuth session & role authorization
+ */
+async function verifyAdminAuth() {
+  const session = await getServerSession(authOptions);
+  const userRole = session?.user?.role;
+
+  if (!session || !userRole || !ALLOWED_ROLES.includes(userRole)) {
+    return NextResponse.json(
+      { message: "غير مصرح لك بالوصول" },
+      { status: 401 }
+    );
+  }
+  return null;
+}
+
 export async function GET() {
+  const authResponse = await verifyAdminAuth();
+  if (authResponse) return authResponse;
+
   try {
     const orders = await prisma.order.findMany({
       orderBy: {
@@ -49,6 +71,9 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
+  const authResponse = await verifyAdminAuth();
+  if (authResponse) return authResponse;
+
   try {
     const body = await request.json();
     const { orderId, status } = body;

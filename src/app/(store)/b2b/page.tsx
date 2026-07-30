@@ -49,11 +49,13 @@ export default function B2BPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          company_name: companyName,
-          contact_person: contactName,
-          phone: contactPhone,
-          email: contactEmail,
-          details: `نوع المنتج: ${productType}\nالكمية: ${quantity}\nالمواصفات: ${specifications}`,
+          companyName,
+          contactName,
+          contactPhone,
+          contactEmail,
+          productType,
+          quantity: quantity ? Number(quantity) : quantity,
+          specifications,
         }),
       });
       const data = await res.json();
