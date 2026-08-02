@@ -16,7 +16,6 @@ import {
   Send, 
   AlertCircle, 
   CheckCircle2, 
-  Sparkles, 
   Calculator, 
   Ruler, 
   HelpCircle,
@@ -71,10 +70,10 @@ export default function PriceCalculator({ product }: PriceCalculatorProps) {
   const [shippingAddress, setShippingAddress] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Uploaded files state
-  const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: number; type: string; url: string }>>([]);
+  // Uploaded files state — url is intentionally absent here.
+  // The real upload to Cloudinary happens server-side during order submission.
+  const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: number; type: string }>>([]);
   const [rawFiles, setRawFiles] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
 
   // Payment state
   const [paymentMethod, setPaymentMethod] = useState("VODAFONE_CASH");
@@ -128,33 +127,25 @@ export default function PriceCalculator({ product }: PriceCalculatorProps) {
     }));
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
-    setIsUploading(true);
     setErrorMessage("");
 
-    try {
-      const file = e.target.files[0];
-      setRawFiles((prev) => [...prev, file]);
-      
-      // Simulated server upload latency
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+    // Store actual File objects — the real upload to Cloudinary happens
+    // server-side when the order is submitted via FormData.
+    const incoming = Array.from(e.target.files);
+    setRawFiles((prev) => [...prev, ...incoming]);
+    setUploadedFiles((prev) => [
+      ...prev,
+      ...incoming.map((file) => ({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      })),
+    ]);
 
-      const mockUrl = `https://print-house-bucket.s3.amazonaws.com/uploads/${Date.now()}-${file.name}`;
-      setUploadedFiles((prev) => [
-        ...prev,
-        {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          url: mockUrl,
-        },
-      ]);
-    } catch (err) {
-      setErrorMessage("عذراً، تعذر رفع الملف. يرجى إعادة المحاولة.");
-    } finally {
-      setIsUploading(false);
-    }
+    // Reset the input value so the same file can be re-selected if removed.
+    e.target.value = "";
   };
 
   const removeFile = (index: number) => {
@@ -370,7 +361,7 @@ export default function PriceCalculator({ product }: PriceCalculatorProps) {
         </div>
 
         {/* Step 2: Upload Files */}
-        <div className="card-premium" style={{ padding: "32px", borderColor: isUploading ? "var(--gold-400)" : "var(--border-strong)" }}>
+        <div className="card-premium" style={{ padding: "32px", borderColor: uploadedFiles.length > 0 ? "var(--gold-400)" : "var(--border-strong)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", borderBottom: "1px solid var(--border)", paddingBottom: "16px" }}>
             <div style={{
               width: "36px", height: "36px", borderRadius: "50%",
@@ -404,6 +395,7 @@ export default function PriceCalculator({ product }: PriceCalculatorProps) {
               type="file"
               onChange={handleFileUpload}
               accept=".pdf,.psd,.ai,.png,.jpeg,.jpg"
+              multiple
               className="cursor-pointer"
               style={{
                 position: "absolute",
@@ -414,18 +406,11 @@ export default function PriceCalculator({ product }: PriceCalculatorProps) {
                 opacity: 0,
               }}
             />
-            {isUploading ? (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-                <Sparkles size={32} className="float-pulse" style={{ color: "var(--gold-400)" }} />
-                <span style={{ color: "var(--gold-300)", fontWeight: 700 }}>جاري معالجة ورفع الملف...</span>
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-                <UploadCloud size={38} style={{ color: "var(--gold-400)" }} />
-                <span style={{ fontWeight: 700, fontSize: "15px", color: "var(--foreground)" }}>اضغط هنا لاختيار الملف أو اسحبه داخل المربع</span>
-                <span style={{ fontSize: "12px", color: "var(--foreground-subtle)" }}>سوف يراجع فريق التصميم الملف مجاناً قبل بدء الطباعة</span>
-              </div>
-            )}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+              <UploadCloud size={38} style={{ color: "var(--gold-400)" }} />
+              <span style={{ fontWeight: 700, fontSize: "15px", color: "var(--foreground)" }}>اضغط هنا لاختيار الملفات أو اسحبها داخل المربع</span>
+              <span style={{ fontSize: "12px", color: "var(--foreground-subtle)" }}>يمكنك اختيار أكثر من ملف — سوف يراجع فريق التصميم الملفات مجاناً قبل بدء الطباعة</span>
+            </div>
           </div>
 
           {/* List of uploaded files */}
@@ -615,7 +600,7 @@ export default function PriceCalculator({ product }: PriceCalculatorProps) {
             <button
               type="submit"
               className="btn btn-gold btn-lg cursor-pointer"
-              disabled={isSubmitting || isUploading}
+              disabled={isSubmitting}
               style={{ padding: "14px 32px", gap: "8px" }}
             >
               <Send size={18} />

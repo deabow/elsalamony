@@ -49,7 +49,9 @@ export async function GET(request: Request) {
                 design_files: true
               }
             }
-          }
+          },
+          // Explicitly select payment_status so TypeScript knows it exists.
+          // (No select needed when using include — all scalar fields are returned.)
         });
 
         if (dbOrder) {
@@ -58,6 +60,8 @@ export async function GET(request: Request) {
             customerName: dbOrder.guest_name,
             customerPhone: dbOrder.guest_phone,
             status: dbOrder.status,
+            // Map snake_case DB field → camelCase expected by the frontend.
+            paymentStatus: dbOrder.payment_status,
             totalPrice: Number(dbOrder.total_price),
             createdAt: dbOrder.created_at.toISOString(),
             items: dbOrder.items.map((item: any) => ({
@@ -95,7 +99,8 @@ export async function GET(request: Request) {
           id: mockOrderId,
           customerName: "عميل تجريبي",
           customerPhone: mockPhone,
-          status: "PRINTING", // active progress for demo
+          status: "PRINTING",
+          paymentStatus: "VERIFYING", // Realistic demo state for mock data
           totalPrice: 270.00,
           createdAt: new Date().toISOString(),
           items: [

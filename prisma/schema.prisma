@@ -66,14 +66,22 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum PaymentStatus {
+  PENDING_PAYMENT
+  VERIFYING
+  PAID
+  FAILED
+}
+
 model Order {
-  id          String      @id @default(uuid())
-  guest_name  String
-  guest_phone String
-  status      OrderStatus @default(PENDING)
-  total_price Decimal     @db.Decimal(10, 2)
-  created_at  DateTime    @default(now())
-  items       OrderItem[]
+  id             String        @id @default(uuid())
+  guest_name     String
+  guest_phone    String
+  status         OrderStatus   @default(PENDING)
+  payment_status PaymentStatus @default(PENDING_PAYMENT)
+  total_price    Decimal       @db.Decimal(10, 2)
+  created_at     DateTime      @default(now())
+  items          OrderItem[]
 }
 
 model OrderItem {
