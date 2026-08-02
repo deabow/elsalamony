@@ -127,7 +127,7 @@ export async function POST(request: Request) {
           where: { id: { in: item.options } },
         });
 
-        const sumModifiers = dbOptionValues.reduce((acc, currentVal) => {
+        const sumModifiers = dbOptionValues.reduce((acc: number, currentVal: { price_modifier: number }) => {
           return acc + currentVal.price_modifier;
         }, 0);
 
