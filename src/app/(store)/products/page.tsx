@@ -6,6 +6,14 @@ import Footer from "@/components/store/footer";
 import ProductsCatalogClient from "@/components/store/products-catalog-client";
 import { Sparkles, Printer, ArrowLeft } from "lucide-react";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "كتالوج كافة المطبوعات والخدمات | مطبعة السلاموني",
+  description: "تصفح كتالوج مطبعة السلاموني لجميع أنواع المطبوعات والدعاية والإعلان بمدينة السادات والإسكندرية: كروت شخصية، رول أب، دفاتر حسابات، لوحات سلامة ومستلزمات التغليف.",
+  keywords: ["كتالوج المطبوعات", "أنواع المطبوعات", "طباعة كروت", "طباعة رول اب", "مطبعة السلاموني السادات", "مطبعة الإسكندرية"]
+};
+
 export const revalidate = 0; // Fresh DB data on every request
 
 export default async function ProductsCatalogPage() {

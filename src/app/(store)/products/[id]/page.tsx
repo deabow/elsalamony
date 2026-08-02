@@ -6,10 +6,57 @@ import ProductGallery from "@/components/store/product-gallery";
 import Header from "@/components/store/header";
 import Footer from "@/components/store/footer";
 
+import type { Metadata } from "next";
+
 type Params = Promise<{ id: string }>;
 
 interface PageProps {
   params: Params;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const dbProduct = await prisma.product.findUnique({
+      where: { id },
+      select: { name: true, description: true, category: true, images: true, base_price: true }
+    });
+
+    if (dbProduct) {
+      const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://elsalamony.com";
+      const title = `${dbProduct.name} | مطبعة السلاموني للمطبوعات`;
+      const description = `${dbProduct.description || dbProduct.name} — طباعة عالية الجودة بمدينة السادات والإسكندرية مع حاسبة تسعير فورية بأسعار تبدأ من ${Number(dbProduct.base_price).toFixed(2)} ج.م.`;
+      const images = dbProduct.images && dbProduct.images.length > 0 ? [dbProduct.images[0]] : ["/logo.jpeg"];
+
+      return {
+        title,
+        description,
+        keywords: [dbProduct.name, dbProduct.category, "المطبوعات", "مطبعة", "طباعة", "مطبعة السلاموني", "مدينة السادات", "الإسكندرية"],
+        openGraph: {
+          title,
+          description,
+          url: `${siteUrl}/products/${id}`,
+          siteName: "مطبعة السلاموني للمطبوعات",
+          images,
+          type: "website",
+          locale: "ar_EG"
+        },
+        twitter: {
+          card: "summary_large_image",
+          title,
+          description,
+          images,
+        }
+      };
+    }
+  } catch (err) {
+    console.error("Metadata generation failed:", err);
+  }
+
+  return {
+    title: "منتج مطبعة السلاموني | المطبوعات والدعاية",
+    description: "تصفح مواصفات وأسعار المطبوعات مع مطبعة السلاموني بمدينة السادات والإسكندرية."
+  };
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
