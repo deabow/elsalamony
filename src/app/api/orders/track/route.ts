@@ -60,7 +60,7 @@ export async function GET(request: Request) {
             status: dbOrder.status,
             totalPrice: Number(dbOrder.total_price),
             createdAt: dbOrder.created_at.toISOString(),
-            items: dbOrder.items.map(item => ({
+            items: dbOrder.items.map((item: any) => ({
               id: item.id,
               product: {
                 name: item.product?.name || "مطبوعات مخصصة",
@@ -68,11 +68,11 @@ export async function GET(request: Request) {
               },
               quantity: item.quantity,
               subtotal: Number(item.subtotal),
-              selectedOptions: item.chosen_value.map(cv => ({
+              selectedOptions: item.chosen_value.map((cv: any) => ({
                 optionName: cv.option_value?.name || "خيار",
                 valueName: cv.option_value?.name || "قيمة"
               })),
-              designFiles: item.design_files.map(file => ({
+              designFiles: item.design_files.map((file: any) => ({
                 fileName: file.file_name,
                 url: file.file_url
               }))
