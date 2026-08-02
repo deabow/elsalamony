@@ -1,4 +1,5 @@
 import Link from "next/link";
+import prisma from "@/lib/prisma";
 import Header from "@/components/store/header";
 import Footer from "@/components/store/footer";
 import { 
@@ -22,6 +23,8 @@ import {
   Clock, 
   ChevronLeft 
 } from "lucide-react";
+
+export const revalidate = 0; // Fetch fresh DB data
 
 // ── Why choose us – feature cards with Lucide icons ──
 const FEATURES = [
@@ -57,53 +60,69 @@ const FEATURES = [
   },
 ];
 
-// ── Print services ──
-const SERVICES = [
+// ── Fallback Print services ──
+const STATIC_SERVICES = [
   {
     id: "business-cards",
     icon: CreditCard,
     name: "كروت الشركات والبزنس كارد",
     desc: "كروت شخصية على أوراق مصقولة فاخرة، سلوفان مات/جلوس، أو ذهبي بارز.",
     badge: "الأكثر طلباً",
+    basePrice: 150,
+    images: [],
   },
   {
-    id: "roll-ups",
+    id: "rollups-banners",
     icon: ScrollText,
     name: "بانر ورول أب الفعاليات",
     desc: "استاندات رول أب عالية الدقة بقاعدة ألمنيوم متينة وحقيبة سفر أنيقة.",
     badge: null,
+    basePrice: 650,
+    images: [],
   },
   {
-    id: "brochures",
-    icon: FileText,
-    name: "بروشورات وكتالوجات",
-    desc: "مطويات ملونة ثنائية ومثلثة الطي ومجلات تعريفية بالمنتجات والشركات.",
-    badge: null,
-  },
-  {
-    id: "logbooks",
+    id: "corporate-logbooks",
     icon: BookOpen,
     name: "دفاتر وسجلات الشركات",
-    desc: "دفاتر إيصالات وسجلات حسينية ومبيعات مخصصة بشعارك وألوانك الخاصة.",
+    desc: "دفاتر إيصالات وسجلات محاسبية ومبيعات مخصصة بشعارك وألوانك الخاصة.",
     badge: "مميز للشركات",
+    basePrice: 450,
+    images: [],
   },
   {
-    id: "safety-signs",
+    id: "safety-signage",
     icon: ShieldAlert,
     name: "لوحات السلامة والصحة المهنية",
     desc: "لوحات PVC وألمنيوم للمصانع والمنشآت بألوان طباعة UV المقاومة للظروف الجوية.",
     badge: "معتمد للمصانع",
-  },
-  {
-    id: "stickers",
-    icon: Tag,
-    name: "ملصقات واستيكرات العبوات",
-    desc: "استيكرات لاصقة عالية الجودة ومقاومة للماء للمنتجات والشحنات والتغليف.",
-    badge: null,
+    basePrice: 120,
+    images: [],
   },
 ];
 
-export default function StoreHome() {
+export default async function StoreHome() {
+  let dbProducts: Array<{
+    id: string;
+    name: string;
+    description: string;
+    base_price: any;
+    category: string;
+    images: string[];
+    options: any[];
+  }> = [];
+
+  try {
+    dbProducts = await prisma.product.findMany({
+      include: { options: true },
+      orderBy: { id: "desc" },
+      take: 6,
+    });
+  } catch (err) {
+    console.error("Failed to query DB products for home page:", err);
+  }
+
+  const hasDbProducts = dbProducts && dbProducts.length > 0;
+
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "100%", minHeight: "100vh" }}>
 
@@ -129,24 +148,6 @@ export default function StoreHome() {
             radial-gradient(ellipse 40% 40% at 60% 85%, rgba(212, 150, 42, 0.08) 0%, transparent 55%)
           `,
         }} />
-
-        {/* Floating backdrop graphic elements */}
-        <div aria-hidden="true" style={{
-          position: "absolute", top: "50px", right: "5%",
-          width: "140px", height: "140px",
-          border: "1px solid rgba(245,184,55,0.18)",
-          borderRadius: "50%",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          opacity: 0.7
-        }}>
-          <div style={{
-            width: "90px", height: "90px",
-            border: "1px stroke rgba(245,184,55,0.25)",
-            borderRadius: "50%",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "var(--gold-400)", fontSize: "20px",
-          }}>✦</div>
-        </div>
 
         <div className="container" style={{ position: "relative", zIndex: 1 }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "56px", alignItems: "center" }}>
@@ -188,10 +189,10 @@ export default function StoreHome() {
               </p>
 
               <div className="animate-in-3" style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
-                <a href="#services" className="btn btn-gold btn-lg cursor-pointer" style={{ gap: "8px" }}>
+                <Link href="/products" className="btn btn-gold btn-lg cursor-pointer" style={{ gap: "8px" }}>
                   <Printer size={20} />
-                  <span>اكتشف المنتجات واحسب السعر</span>
-                </a>
+                  <span>تصفح المنتجات واحسب السعر</span>
+                </Link>
                 <Link href="/b2b" className="btn btn-navy btn-lg cursor-pointer" style={{ gap: "8px" }}>
                   <Building2 size={20} />
                   <span>بوابة الشركات والمصانع</span>
@@ -282,61 +283,128 @@ export default function StoreHome() {
       {/* ══════════════════ DIVIDER ══════════════════ */}
       <div className="divider-gold" />
 
-      {/* ══════════════════ SERVICES SECTION ══════════════════ */}
+      {/* ══════════════════ DYNAMIC PRODUCTS SECTION ══════════════════ */}
       <section id="services" className="section">
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: "64px" }}>
             <div className="badge badge-gold" style={{ marginBottom: "16px", gap: "6px" }}>
               <Printer size={14} />
-              <span>خدماتنا الأساسية</span>
+              <span>كتالوج المنتجات والخدمات المتاحة</span>
             </div>
             <h2 style={{ fontSize: "clamp(28px, 4vw, 44px)", marginBottom: "16px" }}>
-              تصفح خدمات الطباعة المتاحة
+              منتجات المطبعة المتاحة للطلب الفوري
             </h2>
             <div className="arabic-divider" style={{ color: "var(--gold-400)", maxWidth: "300px", margin: "0 auto 20px" }}>
               <span>◆</span>
             </div>
             <p style={{ color: "var(--foreground-muted)", fontSize: "16.5px", maxWidth: "580px", margin: "0 auto", lineHeight: 1.8 }}>
-              حدد المنتج، اضبط مقاساتك وكمياتك بمرونة، واحصل على سعر فوري وشفاف قبل تقديم طلبك.
+              حدد المنتج، اضبط المقاسات والكميات بمرونة، واحصل على سعر فوري وشفاف قبل تقديم طلبك.
             </p>
           </div>
 
-          <div className="grid grid-3">
-            {SERVICES.map((svc) => {
-              const IconComp = svc.icon;
-              return (
-                <div key={svc.id} className="card-premium ornament-card gold-top cursor-pointer" style={{ display: "flex", flexDirection: "column" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "22px" }}>
-                    <div style={{
-                      width: "54px", height: "54px",
-                      background: "rgba(245, 184, 55, 0.12)",
-                      border: "1px solid var(--border-strong)",
-                      borderRadius: "14px",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      color: "var(--gold-400)",
-                      boxShadow: "0 4px 14px rgba(245, 184, 55, 0.15)",
-                    }}>
-                      <IconComp size={26} />
+          {/* Dynamic Products Grid */}
+          <div className="grid grid-3" style={{ gap: "28px" }}>
+            {hasDbProducts
+              ? dbProducts.map((p) => {
+                  const hasImage = p.images && p.images.length > 0;
+                  return (
+                    <div key={p.id} className="card-premium ornament-card gold-top cursor-pointer" style={{ display: "flex", flexDirection: "column", padding: "0", overflow: "hidden" }}>
+                      {/* Image Thumbnail Header */}
+                      <div style={{
+                        height: "200px",
+                        background: "#040812",
+                        position: "relative",
+                        overflow: "hidden",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderBottom: "1px solid var(--border)"
+                      }}>
+                        {hasImage ? (
+                          <img
+                            src={p.images[0]}
+                            alt={p.name}
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          />
+                        ) : (
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--gold-400)" }}>
+                            <Printer size={32} />
+                            <span style={{ fontSize: "12px", color: "var(--foreground-subtle)" }}>مطبعة السلاموني</span>
+                          </div>
+                        )}
+                        <span className="badge badge-navy" style={{ position: "absolute", top: "12px", right: "12px", fontSize: "10.5px" }}>
+                          {p.category}
+                        </span>
+                      </div>
+
+                      {/* Product Content Body */}
+                      <div style={{ padding: "24px", display: "flex", flexDirection: "column", flex: 1 }}>
+                        <h3 style={{ fontSize: "19px", marginBottom: "10px", fontFamily: "var(--font-heading)", color: "var(--foreground)" }}>
+                          {p.name}
+                        </h3>
+                        <p style={{ color: "var(--foreground-muted)", fontSize: "14px", lineHeight: 1.7, flex: 1, marginBottom: "20px" }}>
+                          {p.description || "خامات ممتازة وتسعير دقيق مع إمكانية حسبة السعر تلقائياً."}
+                        </p>
+                        <div style={{ borderTop: "1px solid var(--border)", paddingTop: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <span style={{ fontSize: "11px", color: "var(--foreground-subtle)", display: "block" }}>السعر الأساسي:</span>
+                            <strong style={{ color: "var(--gold-400)", fontSize: "18px", fontFamily: "var(--font-heading)" }}>
+                              {Number(p.base_price).toFixed(2)} ج.م
+                            </strong>
+                          </div>
+                          <Link href={`/products/${p.id}`} className="btn btn-gold btn-sm cursor-pointer" style={{ gap: "6px" }}>
+                            <span>تحديد السعر</span>
+                            <ChevronLeft size={16} />
+                          </Link>
+                        </div>
+                      </div>
                     </div>
-                    {svc.badge && (
-                      <span className="badge badge-gold" style={{ fontSize: "11.5px" }}>{svc.badge}</span>
-                    )}
-                  </div>
-                  <h3 style={{ fontSize: "20px", marginBottom: "12px", fontFamily: "var(--font-heading)" }}>
-                    {svc.name}
-                  </h3>
-                  <p style={{ color: "var(--foreground-muted)", fontSize: "14.5px", lineHeight: 1.8, flex: 1 }}>
-                    {svc.desc}
-                  </p>
-                  <div style={{ borderTop: "1px solid var(--border)", paddingTop: "20px", marginTop: "24px" }}>
-                    <Link href={`/products/${svc.id}`} className="btn btn-outline-gold btn-sm cursor-pointer" style={{ width: "100%", justifyContent: "center" }}>
-                      <span>تحديد المواصفات والسعر</span>
-                      <ChevronLeft size={16} />
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })
+              : STATIC_SERVICES.map((svc) => {
+                  const IconComp = svc.icon;
+                  return (
+                    <div key={svc.id} className="card-premium ornament-card gold-top cursor-pointer" style={{ display: "flex", flexDirection: "column" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "22px" }}>
+                        <div style={{
+                          width: "54px", height: "54px",
+                          background: "rgba(245, 184, 55, 0.12)",
+                          border: "1px solid var(--border-strong)",
+                          borderRadius: "14px",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          color: "var(--gold-400)",
+                          boxShadow: "0 4px 14px rgba(245, 184, 55, 0.15)",
+                        }}>
+                          <IconComp size={26} />
+                        </div>
+                        {svc.badge && (
+                          <span className="badge badge-gold" style={{ fontSize: "11.5px" }}>{svc.badge}</span>
+                        )}
+                      </div>
+                      <h3 style={{ fontSize: "20px", marginBottom: "12px", fontFamily: "var(--font-heading)" }}>
+                        {svc.name}
+                      </h3>
+                      <p style={{ color: "var(--foreground-muted)", fontSize: "14.5px", lineHeight: 1.8, flex: 1 }}>
+                        {svc.desc}
+                      </p>
+                      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "20px", marginTop: "24px" }}>
+                        <Link href={`/products/${svc.id}`} className="btn btn-outline-gold btn-sm cursor-pointer" style={{ width: "100%", justifyContent: "center" }}>
+                          <span>تحديد المواصفات والسعر</span>
+                          <ChevronLeft size={16} />
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+          </div>
+
+          {/* CTA to View All Products page */}
+          <div style={{ textAlign: "center", marginTop: "48px" }}>
+            <Link href="/products" className="btn btn-gold btn-lg cursor-pointer" style={{ gap: "8px" }}>
+              <Printer size={20} />
+              <span>عرض كافة منتجات وخدمات الكتالوج</span>
+              <ChevronLeft size={18} />
+            </Link>
           </div>
         </div>
       </section>

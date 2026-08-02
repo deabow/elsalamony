@@ -142,6 +142,14 @@ export default function Header() {
               الرئيسية
             </Link>
             <Link 
+              href="/products" 
+              className={`nav-link ${pathname?.startsWith("/products") ? "active" : ""}`}
+              style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+            >
+              <Sparkles size={16} style={{ opacity: 0.8 }} />
+              المنتجات والكتالوج
+            </Link>
+            <Link 
               href="/b2b" 
               className={`nav-link ${pathname === "/b2b" ? "active" : ""}`}
               style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
