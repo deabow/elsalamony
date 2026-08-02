@@ -2,6 +2,9 @@ import React from "react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import PriceCalculator from "@/components/store/price-calculator";
+import ProductGallery from "@/components/store/product-gallery";
+import Header from "@/components/store/header";
+import Footer from "@/components/store/footer";
 
 // Mock Fallbacks for catalog configurations
 const PRODUCT_FALLBACKS: Record<string, {
@@ -9,6 +12,7 @@ const PRODUCT_FALLBACKS: Record<string, {
   description: string;
   basePrice: number;
   sku: string;
+  images?: string[];
   options: Array<{
     name: string;
     isRequired: boolean;
@@ -98,26 +102,26 @@ const PRODUCT_FALLBACKS: Record<string, {
   },
   "rollups-banners": {
     name: "Retractable Roll-up Banners",
-    description: "High-resolution printed roll-up stands with premium aluminum base, including carrying bag.",
-    basePrice: 850.00,
+    description: "Durable aluminum base with vivid color printing on premium non-curl vinyl film.",
+    basePrice: 650.00,
     sku: "PRT-RU-003",
     options: [
       {
-        name: "Base Base Stand",
+        name: "Base Stand Mechanism",
         isRequired: true,
         values: [
-          { value: "Aluminum Eco Stand", priceModifier: 0.00 },
-          { value: "Heavy-Duty Chrome Base", priceModifier: 250.00 },
-          { value: "Double-Sided Display", priceModifier: 500.00 },
+          { value: "Standard Economy Aluminum", priceModifier: 0.00 },
+          { value: "Heavy-Duty Broadfoot Premium", priceModifier: 150.00 },
+          { value: "Luxury Teardrop Base Chrome", priceModifier: 290.00 },
         ]
       },
       {
-        name: "Dimensions",
+        name: "Banner Dimensions",
         isRequired: true,
         values: [
-          { value: "85x200cm", priceModifier: 0.00 },
-          { value: "100x200cm", priceModifier: 150.00 },
-          { value: "120x200cm", priceModifier: 280.00 },
+          { value: "85x200cm Standard", priceModifier: 0.00 },
+          { value: "100x200cm Medium", priceModifier: 140.00 },
+          { value: "120x200cm Large", priceModifier: 280.00 },
         ]
       }
     ]
@@ -169,7 +173,16 @@ interface PageProps {
 export default async function ProductDetailPage({ params }: PageProps) {
   const { id } = await params;
 
-  let product = null;
+  let product: {
+    id: string;
+    name: string;
+    description: string;
+    basePrice: number;
+    category: string;
+    sku: string;
+    images?: string[];
+    options: any[];
+  } | null = null;
 
   try {
     // Try querying the PostgreSQL Database using Prisma Client
@@ -185,7 +198,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
     });
 
     if (dbProduct) {
-      // Map Decimal fields to raw numbers for client-side serialization
       product = {
         id: dbProduct.id,
         name: dbProduct.name,
@@ -193,7 +205,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
         basePrice: Number(dbProduct.base_price),
         category: dbProduct.category,
         sku: "PRT-CUST-" + dbProduct.id.substring(0, 5),
-        // options: dbProduct.options.map((opt: any) => ({
+        images: dbProduct.images || [],
         options: dbProduct.options.map((opt: any) => ({
           id: opt.id,
           name: opt.name,
@@ -207,7 +219,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
       };
     }
   } catch (error) {
-    console.error("Database connection was skipped or failed. Relying on fallback mockup config:", error);
+    console.error("Database lookup failed, using fallback:", error);
   }
 
   // Load static configurations if database has no records or failed
@@ -219,6 +231,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
       description: fallback.description,
       basePrice: fallback.basePrice,
       sku: fallback.sku,
+      images: fallback.images || [],
       category: id === "rollups-banners" ? "banners" : "other",
       options: fallback.options.map((opt, oIdx) => ({
         id: `opt-${oIdx}`,
@@ -235,16 +248,26 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   if (!product) {
     return (
-      <div className="container section" style={{ textAlign: "center" }}>
-        <h2>Product Not Found</h2>
-        <p style={{ color: "var(--muted)", margin: "16px 0" }}>The requested printing product catalog item does not exist.</p>
-        <Link href="/" className="btn btn-secondary">Return to Catalog</Link>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <Header />
+        <div className="container section" style={{ textAlign: "center", flex: 1, padding: "80px 24px" }}>
+          <h2 style={{ fontSize: "28px", fontFamily: "var(--font-heading)", color: "var(--gold-400)", marginBottom: "12px" }}>
+            المنتج غير موجود في الكتالوج
+          </h2>
+          <p style={{ color: "var(--foreground-muted)", marginBottom: "24px" }}>
+            عذراً، المنتج المطلوب غير متوفر حالياً أو تم حذفه من كتالوج المطبوعات.
+          </p>
+          <Link href="/" className="btn btn-gold">العودة للكتالوج الرئيسي</Link>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", width: "100%", minHeight: "100vh" }}>
+      <Header />
+
       {/* Mini Breadcrumbs Nav Header */}
       <header style={{
         background: "rgba(9, 11, 16, 0.4)",
@@ -252,33 +275,50 @@ export default async function ProductDetailPage({ params }: PageProps) {
         padding: "16px 0"
       }}>
         <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", gap: "8px", fontSize: "14px", color: "var(--muted)" }}>
-            <Link href="/">Elsalamony Store</Link>
+          <div style={{ display: "flex", gap: "8px", fontSize: "14px", color: "var(--foreground-subtle)" }}>
+            <Link href="/">كتالوج مطبعة السلاموني</Link>
             <span>/</span>
-            <span style={{ color: "var(--foreground)" }}>{product.name}</span>
+            <span style={{ color: "var(--gold-400)", fontWeight: 600 }}>{product.name}</span>
           </div>
-          <Link href="/" style={{ fontSize: "14px", color: "var(--primary)" }}>← Back to Catalog</Link>
+          <Link href="/" style={{ fontSize: "13.5px", color: "var(--gold-400)" }}>← العودة للرئيسية</Link>
         </div>
       </header>
 
       {/* Main product setup workspace */}
-      <main className="section">
-        <div className="container" style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+      <main className="section" style={{ flex: 1 }}>
+        <div className="container" style={{ display: "flex", flexDirection: "column", gap: "36px" }}>
 
-          <div className="animate-fade-in">
-            <span className="badge badge-printing" style={{ marginBottom: "12px" }}>{product.sku}</span>
-            <h1 style={{ fontSize: "38px", fontFamily: "var(--font-heading)" }}>{product.name}</h1>
-            <p style={{ color: "var(--muted)", maxWidth: "700px", marginTop: "8px", fontSize: "16px" }}>
+          {/* Product Title Header */}
+          <div className="animate-in">
+            <span className="badge badge-gold" style={{ marginBottom: "12px" }}>كود المنتج: {product.sku}</span>
+            <h1 style={{ fontSize: "clamp(26px, 4vw, 42px)", fontFamily: "var(--font-heading)", lineHeight: 1.25 }}>{product.name}</h1>
+            <p style={{ color: "var(--foreground-muted)", maxWidth: "760px", marginTop: "10px", fontSize: "16px", lineHeight: 1.8 }}>
               {product.description}
             </p>
           </div>
 
-          <div style={{ borderTop: "1px solid var(--border)", paddingTop: "32px" }}>
-            <PriceCalculator product={product} />
+          {/* Top Section Split: Interactive Gallery + Price Calculator */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "40px",
+            alignItems: "flex-start"
+          }}>
+            {/* Gallery Column */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <ProductGallery images={product.images} productName={product.name} />
+            </div>
+
+            {/* Price Calculator Column */}
+            <div>
+              <PriceCalculator product={product} />
+            </div>
           </div>
 
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

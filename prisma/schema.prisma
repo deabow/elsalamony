@@ -33,6 +33,7 @@ model Product {
   description String
   base_price  Decimal         @db.Decimal(10, 2)
   category    String
+  images      String[]        @default([])
   options     ProductOption[]
   order_items OrderItem[]
 }

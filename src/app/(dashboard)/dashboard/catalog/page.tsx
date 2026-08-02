@@ -21,6 +21,7 @@ interface Product {
   category: string;
   description: string;
   base_price: string | number;
+  images?: string[];
   options: ProductOption[];
 }
 
@@ -38,6 +39,8 @@ export default function CatalogDashboard() {
   const [newCategory, setNewCategory] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newBasePrice, setNewBasePrice] = useState("");
+  const [newImages, setNewImages] = useState<string[]>([]);
+  const [newImageUrlInput, setNewImageUrlInput] = useState("");
   
   // Dynamic options/values builder for creation form
   const [formOptions, setFormOptions] = useState<{
@@ -51,9 +54,12 @@ export default function CatalogDashboard() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Edit base price state
+  // Edit product state
   const [editBasePrice, setEditBasePrice] = useState("");
+  const [editImages, setEditImages] = useState<string[]>([]);
+  const [editImageUrlInput, setEditImageUrlInput] = useState("");
   const [updatingPrice, setUpdatingPrice] = useState(false);
+  const [updatingProduct, setUpdatingProduct] = useState(false);
 
   const selectedProduct = products.find((p) => p.id === selectedId) ?? null;
 
@@ -181,6 +187,7 @@ export default function CatalogDashboard() {
           description: newDesc,
           base_price: Number(newBasePrice),
           category: newCategory,
+          images: newImages,
           options: formOptions.map((opt) => ({
             name: opt.name,
             values: opt.values.map((val) => ({
@@ -204,6 +211,8 @@ export default function CatalogDashboard() {
         setNewCategory("");
         setNewDesc("");
         setNewBasePrice("");
+        setNewImages([]);
+        setNewImageUrlInput("");
         setFormOptions([]);
       } else {
         setError(data.message || "فشل في حفظ المنتج الجديد. يرجى التحقق من المدخلات.");
@@ -244,6 +253,7 @@ export default function CatalogDashboard() {
   const handleSelectProduct = (p: Product) => {
     setSelectedId(p.id);
     setEditBasePrice(Number(p.base_price).toString());
+    setEditImages(p.images || []);
   };
 
   // ── Handle updating base price via /api/products (PATCH) ──
@@ -391,6 +401,57 @@ export default function CatalogDashboard() {
                   rows={3}
                   disabled={loading}
                 />
+              </div>
+
+              {/* Image URLs Input Manager */}
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">صور المنتج (روابط الصور)</label>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input
+                    type="url"
+                    className="form-control ltr"
+                    placeholder="https://... رابط صورة المنتج"
+                    value={newImageUrlInput}
+                    onChange={(e) => setNewImageUrlInput(e.target.value)}
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-navy btn-sm"
+                    style={{ padding: "0 16px", whiteSpace: "nowrap" }}
+                    onClick={() => {
+                      if (newImageUrlInput.trim()) {
+                        setNewImages((prev) => [...prev, newImageUrlInput.trim()]);
+                        setNewImageUrlInput("");
+                      }
+                    }}
+                    disabled={loading || !newImageUrlInput.trim()}
+                  >
+                    ➕ إضافة صورة
+                  </button>
+                </div>
+
+                {newImages.length > 0 && (
+                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "12px" }}>
+                    {newImages.map((url, idx) => (
+                      <div key={idx} style={{ position: "relative", width: "64px", height: "64px", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--border)" }}>
+                        <img src={url} alt={`معاينة ${idx}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <button
+                          type="button"
+                          onClick={() => setNewImages((prev) => prev.filter((_, i) => i !== idx))}
+                          style={{
+                            position: "absolute", top: "2px", left: "2px",
+                            background: "rgba(239,68,68,0.85)", color: "#fff",
+                            border: "none", borderRadius: "50%", width: "20px", height: "20px",
+                            fontSize: "10px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Dynamic Options Manager Section */}
@@ -650,6 +711,92 @@ export default function CatalogDashboard() {
                     </button>
                   </div>
                 </form>
+
+                {/* Product Images Gallery & Editor */}
+                <div className="card-premium" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <h3 style={{ fontSize: "16px", borderBottom: "1px solid var(--border)", paddingBottom: "12px", fontWeight: 700 }}>
+                    🖼️ معرض صور المنتج ({editImages.length})
+                  </h3>
+
+                  {editImages.length > 0 ? (
+                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                      {editImages.map((imgUrl, idx) => (
+                        <div key={idx} style={{
+                          position: "relative", width: "90px", height: "90px",
+                          borderRadius: "var(--radius-sm)", overflow: "hidden",
+                          border: "1px solid var(--border)", background: "#040812"
+                        }}>
+                          <img src={imgUrl} alt={`صورة ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = editImages.filter((_, i) => i !== idx);
+                              setEditImages(updated);
+                              if (selectedId) {
+                                fetch("/api/products", {
+                                  method: "PATCH",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ id: selectedId, images: updated }),
+                                }).then(() => {
+                                  setProducts((prev) =>
+                                    prev.map((p) => (p.id === selectedId ? { ...p, images: updated } : p))
+                                  );
+                                });
+                              }
+                            }}
+                            style={{
+                              position: "absolute", top: "4px", left: "4px",
+                              background: "rgba(239,68,68,0.85)", color: "#fff",
+                              border: "none", borderRadius: "50%", width: "22px", height: "22px",
+                              fontSize: "11px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"
+                            }}
+                            title="حذف الصورة"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: "13px", color: "var(--foreground-subtle)" }}>
+                      لا توجد صور مضافة لهذا المنتج حالياً. أضف روابط الصور أدناه.
+                    </p>
+                  )}
+
+                  <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                    <input
+                      type="url"
+                      className="form-control ltr"
+                      placeholder="https://... رابط صورة جديدة للمنتج"
+                      value={editImageUrlInput}
+                      onChange={(e) => setEditImageUrlInput(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-navy btn-sm"
+                      style={{ padding: "0 16px", whiteSpace: "nowrap" }}
+                      onClick={() => {
+                        if (editImageUrlInput.trim() && selectedId) {
+                          const updated = [...editImages, editImageUrlInput.trim()];
+                          setEditImages(updated);
+                          setEditImageUrlInput("");
+                          fetch("/api/products", {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: selectedId, images: updated }),
+                          }).then(() => {
+                            setProducts((prev) =>
+                              prev.map((p) => (p.id === selectedId ? { ...p, images: updated } : p))
+                            );
+                          });
+                        }
+                      }}
+                      disabled={!editImageUrlInput.trim()}
+                    >
+                      ➕ إضافة صورة
+                    </button>
+                  </div>
+                </div>
 
                 {/* Option manager (Read-only view of product configurations saved in database) */}
                 <div className="card-premium" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>

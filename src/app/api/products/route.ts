@@ -26,6 +26,7 @@ const createProductSchema = z.object({
   base_price: z.number().positive("السعر الأساسي يجب أن يكون أكبر من صفر")
     .or(z.string().regex(/^\d+(\.\d{1,2})?$/, "تنسيق السعر غير صحيح").transform(Number)),
   category: z.string().min(1, "التصنيف مطلوب"),
+  images: z.array(z.string()).default([]),
   options: z.array(
     z.object({
       name: z.string().min(1, "اسم الخيار مطلوب"),
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, description, base_price, category, options } = parsed.data;
+    const { name, description, base_price, category, images, options } = parsed.data;
 
     // Save to DB in a transaction using nested create
     const product = await prisma.product.create({
@@ -64,6 +65,7 @@ export async function POST(request: Request) {
         description,
         base_price,
         category,
+        images,
         options: {
           create: options.map((opt) => ({
             name: opt.name,
@@ -156,7 +158,7 @@ export async function PATCH(request: Request) {
 
   try {
     const body = await request.json();
-    const { id, name, description, base_price, category } = body;
+    const { id, name, description, base_price, category, images } = body;
     
     if (!id) {
       return NextResponse.json(
@@ -169,6 +171,7 @@ export async function PATCH(request: Request) {
     if (name !== undefined) dataToUpdate.name = name;
     if (description !== undefined) dataToUpdate.description = description;
     if (category !== undefined) dataToUpdate.category = category;
+    if (images !== undefined) dataToUpdate.images = images;
     if (base_price !== undefined) {
       dataToUpdate.base_price = base_price;
     }
