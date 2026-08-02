@@ -225,7 +225,7 @@ export default function ProductsCatalogClient({ initialProducts }: Props) {
 
                   <div style={{
                     display: "flex",
-                    justify: "space-between",
+                    justifyContent: "space-between",
                     alignItems: "center",
                     borderTop: "1px solid var(--border)",
                     paddingTop: "16px",
