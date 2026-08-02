@@ -198,8 +198,19 @@ export default function CatalogDashboard() {
         }),
       });
 
-      const data = await response.json();
-      if (response.ok && data.success && data.product) {
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch (parseErr) {
+        if (response.status === 413) {
+          setError("حجم الطلب أو الصور كبير جداً (Request Entity Too Large). يرجى إدخال روابط صور (URLs) خفيفة ومباشرة من مواقع الاستضافة بدلاً من النص الضخم.");
+          return;
+        }
+        setError(`خطأ غير متوقع من الخادم (كود ${response.status}). يرجى التأكد من صحة المدخلات وإعادة المحاولة.`);
+        return;
+      }
+
+      if (response.ok && data?.success && data?.product) {
         setProducts((prev) => [data.product, ...prev]);
         setSelectedId(data.product.id);
         setEditBasePrice(Number(data.product.base_price).toString());
@@ -215,7 +226,7 @@ export default function CatalogDashboard() {
         setNewImageUrlInput("");
         setFormOptions([]);
       } else {
-        setError(data.message || "فشل في حفظ المنتج الجديد. يرجى التحقق من المدخلات.");
+        setError(data?.message || "فشل في حفظ المنتج الجديد. يرجى التحقق من المدخلات.");
       }
     } catch (err: any) {
       console.error(err);
