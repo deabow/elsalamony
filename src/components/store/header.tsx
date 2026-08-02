@@ -214,27 +214,47 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button 
-          className="mobile-menu-btn cursor-pointer"
-          onClick={() => setMenuOpen(!menuOpen)}
-          style={{
-            background: "rgba(245, 184, 55, 0.1)",
-            border: "1px solid var(--border)",
-            color: "var(--gold-400)",
-            borderRadius: "10px",
-            width: "42px",
-            height: "42px",
-            display: "none", // Managed by CSS media query
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "all 0.25s ease",
-            zIndex: 110,
-          }}
-          title="القائمة"
-        >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        {/* Mobile Header Action Controls */}
+        <div className="mobile-header-controls" style={{ display: "none", alignItems: "center", gap: "10px", zIndex: 110 }}>
+          <button
+            onClick={toggleTheme}
+            className="cursor-pointer"
+            style={{
+              background: "rgba(245, 184, 55, 0.1)",
+              border: "1px solid var(--border)",
+              color: "var(--gold-400)",
+              borderRadius: "50%",
+              width: "38px",
+              height: "38px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            title={theme === "dark" ? "الوضع المضيء" : "الوضع المظلم"}
+          >
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
+          <button 
+            className="mobile-menu-btn cursor-pointer"
+            onClick={() => setMenuOpen(!menuOpen)}
+            style={{
+              background: "rgba(245, 184, 55, 0.12)",
+              border: "1px solid var(--gold-500)",
+              color: "var(--gold-400)",
+              borderRadius: "10px",
+              width: "42px",
+              height: "42px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.25s ease",
+            }}
+            title="القائمة"
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
 
       </div>
 
@@ -242,96 +262,157 @@ export default function Header() {
       {menuOpen && (
         <div className="mobile-menu-overlay animate-in" style={{
           position: "fixed",
-          top: "72px", // Height of sticky header
+          top: "68px",
           left: 0,
           right: 0,
-          bottom: 0,
-          background: "var(--surface-overlay)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
+          height: "calc(100vh - 68px)",
+          background: "linear-gradient(180deg, rgba(8, 16, 36, 0.96) 0%, rgba(4, 8, 18, 0.98) 100%)",
+          backdropFilter: "blur(28px)",
+          WebkitBackdropFilter: "blur(28px)",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "28px",
-          padding: "40px 24px",
+          justifyContent: "space-between",
+          padding: "24px 20px 40px",
           zIndex: 99,
           borderTop: "1px solid var(--border)",
+          overflowY: "auto",
         }}>
           <nav style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            gap: "22px",
+            gap: "12px",
           }}>
             <Link 
               href="/" 
-              className={`nav-link ${pathname === "/" ? "active" : ""}`}
-              style={{ fontSize: "18px", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px" }}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                fontSize: "16px",
+                fontWeight: pathname === "/" ? 700 : 500,
+                color: pathname === "/" ? "var(--gold-400)" : "var(--foreground)",
+                background: pathname === "/" ? "rgba(245, 184, 55, 0.12)" : "rgba(255,255,255,0.02)",
+                border: pathname === "/" ? "1px solid var(--border-strong)" : "1px solid var(--border)",
+                borderRadius: "12px",
+                padding: "14px 18px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
-              <Printer size={18} />
-              الرئيسية
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <Printer size={20} style={{ color: "var(--gold-400)" }} />
+                <span>الرئيسية</span>
+              </div>
+              <span style={{ fontSize: "18px", opacity: 0.5 }}>‹</span>
             </Link>
+
+            <Link 
+              href="/products" 
+              onClick={() => setMenuOpen(false)}
+              style={{
+                fontSize: "16px",
+                fontWeight: pathname?.startsWith("/products") ? 700 : 500,
+                color: pathname?.startsWith("/products") ? "var(--gold-400)" : "var(--foreground)",
+                background: pathname?.startsWith("/products") ? "rgba(245, 184, 55, 0.12)" : "rgba(255,255,255,0.02)",
+                border: pathname?.startsWith("/products") ? "1px solid var(--border-strong)" : "1px solid var(--border)",
+                borderRadius: "12px",
+                padding: "14px 18px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <Sparkles size={20} style={{ color: "var(--gold-400)" }} />
+                <span>المنتجات والكتالوج</span>
+              </div>
+              <span style={{ fontSize: "18px", opacity: 0.5 }}>‹</span>
+            </Link>
+
             <Link 
               href="/b2b" 
-              className={`nav-link ${pathname === "/b2b" ? "active" : ""}`}
-              style={{ fontSize: "18px", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px" }}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                fontSize: "16px",
+                fontWeight: pathname === "/b2b" ? 700 : 500,
+                color: pathname === "/b2b" ? "var(--gold-400)" : "var(--foreground)",
+                background: pathname === "/b2b" ? "rgba(245, 184, 55, 0.12)" : "rgba(255,255,255,0.02)",
+                border: pathname === "/b2b" ? "1px solid var(--border-strong)" : "1px solid var(--border)",
+                borderRadius: "12px",
+                padding: "14px 18px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
-              <Building2 size={18} />
-              بوابة الشركات
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <Building2 size={20} style={{ color: "var(--gold-400)" }} />
+                <span>بوابة الشركات</span>
+              </div>
+              <span style={{ fontSize: "18px", opacity: 0.5 }}>‹</span>
             </Link>
+
             <Link 
               href="/order-tracking" 
-              className={`nav-link ${pathname === "/order-tracking" ? "active" : ""}`}
-              style={{ fontSize: "18px", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px" }}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                fontSize: "16px",
+                fontWeight: pathname === "/order-tracking" ? 700 : 500,
+                color: pathname === "/order-tracking" ? "var(--gold-400)" : "var(--foreground)",
+                background: pathname === "/order-tracking" ? "rgba(245, 184, 55, 0.12)" : "rgba(255,255,255,0.02)",
+                border: pathname === "/order-tracking" ? "1px solid var(--border-strong)" : "1px solid var(--border)",
+                borderRadius: "12px",
+                padding: "14px 18px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
-              <ShieldCheck size={18} />
-              تتبع الطلب
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <ShieldCheck size={20} style={{ color: "var(--gold-400)" }} />
+                <span>تتبع الطلب</span>
+              </div>
+              <span style={{ fontSize: "18px", opacity: 0.5 }}>‹</span>
             </Link>
+
             <Link 
               href="/branches" 
-              className={`nav-link ${pathname === "/branches" ? "active" : ""}`}
-              style={{ fontSize: "18px", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px" }}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                fontSize: "16px",
+                fontWeight: pathname === "/branches" ? 700 : 500,
+                color: pathname === "/branches" ? "var(--gold-400)" : "var(--foreground)",
+                background: pathname === "/branches" ? "rgba(245, 184, 55, 0.12)" : "rgba(255,255,255,0.02)",
+                border: pathname === "/branches" ? "1px solid var(--border-strong)" : "1px solid var(--border)",
+                borderRadius: "12px",
+                padding: "14px 18px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
-              <MapPin size={18} />
-              فروعنا
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <MapPin size={20} style={{ color: "var(--gold-400)" }} />
+                <span>فروعنا</span>
+              </div>
+              <span style={{ fontSize: "18px", opacity: 0.5 }}>‹</span>
             </Link>
           </nav>
 
-          <div style={{ width: "100px", height: "1px", background: "var(--border)" }} />
-
-          {/* Theme Switcher & Dashboard Access */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", width: "100%", maxWidth: "280px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <span style={{ fontSize: "14px", color: "var(--foreground-muted)" }}>الوضع الحالي:</span>
-              <button
-                onClick={toggleTheme}
-                className="cursor-pointer"
-                style={{
-                  background: "rgba(245, 184, 55, 0.1)",
-                  border: "1px solid var(--border)",
-                  color: "var(--gold-400)",
-                  borderRadius: "50%",
-                  width: "42px",
-                  height: "42px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "18px",
-                }}
-              >
-                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-            </div>
-
+          {/* Quick Footer Action Button */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "24px" }}>
             <Link 
               href="/dashboard" 
+              onClick={() => setMenuOpen(false)}
               className="btn btn-gold cursor-pointer" 
-              style={{ width: "100%", padding: "14px 20px", textAlign: "center", display: "flex", justifyContent: "center" }}
+              style={{ width: "100%", padding: "16px", textAlign: "center", display: "flex", justifyContent: "center", gap: "8px", fontSize: "15px" }}
             >
               <UserCheck size={18} />
-              دخول الموظفين
+              <span>دخول الموظفين واللوحة</span>
             </Link>
+
+            <div style={{ textAlign: "center", fontSize: "12px", color: "var(--foreground-subtle)" }}>
+              مطبعة السلاموني © {new Date().getFullYear()} — جميع الحقوق محفوظة
+            </div>
           </div>
         </div>
       )}

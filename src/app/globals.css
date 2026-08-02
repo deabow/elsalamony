@@ -585,13 +585,13 @@ textarea.form-control { resize: vertical; min-height: 120px; }
   .desktop-nav-controls {
     display: none !important;
   }
-  .mobile-menu-btn {
+  .mobile-header-controls {
     display: flex !important;
   }
 }
 
 @media (min-width: 992px) {
-  .mobile-menu-btn {
+  .mobile-header-controls {
     display: none !important;
   }
   .mobile-menu-overlay {
