@@ -94,8 +94,9 @@ export async function POST(request: Request) {
     );
   } catch (error: any) {
     console.error("Failed to create product:", error);
+    const detail = error?.message || "خطأ غير معروف في الاتصال بقاعدة البيانات";
     return NextResponse.json(
-      { success: false, message: "فشل في حفظ المنتج الجديد في قاعدة البيانات", error: error.message },
+      { success: false, message: `فشل في حفظ المنتج في قاعدة البيانات (${detail})`, error: detail },
       { status: 500 }
     );
   }
