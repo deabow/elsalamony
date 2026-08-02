@@ -304,98 +304,74 @@ export default async function StoreHome() {
 
           {/* Dynamic Products Grid */}
           <div className="grid grid-3" style={{ gap: "28px" }}>
-            {hasDbProducts
-              ? dbProducts.map((p) => {
-                  const hasImage = p.images && p.images.length > 0;
-                  return (
-                    <div key={p.id} className="card-premium ornament-card gold-top cursor-pointer" style={{ display: "flex", flexDirection: "column", padding: "0", overflow: "hidden" }}>
-                      {/* Image Thumbnail Header */}
-                      <div style={{
-                        height: "200px",
-                        background: "#040812",
-                        position: "relative",
-                        overflow: "hidden",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderBottom: "1px solid var(--border)"
-                      }}>
-                        {hasImage ? (
-                          <img
-                            src={p.images[0]}
-                            alt={p.name}
-                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                          />
-                        ) : (
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--gold-400)" }}>
-                            <Printer size={32} />
-                            <span style={{ fontSize: "12px", color: "var(--foreground-subtle)" }}>مطبعة السلاموني</span>
-                          </div>
-                        )}
-                        <span className="badge badge-navy" style={{ position: "absolute", top: "12px", right: "12px", fontSize: "10.5px" }}>
-                          {p.category}
-                        </span>
-                      </div>
-
-                      {/* Product Content Body */}
-                      <div style={{ padding: "24px", display: "flex", flexDirection: "column", flex: 1 }}>
-                        <h3 style={{ fontSize: "19px", marginBottom: "10px", fontFamily: "var(--font-heading)", color: "var(--foreground)" }}>
-                          {p.name}
-                        </h3>
-                        <p style={{ color: "var(--foreground-muted)", fontSize: "14px", lineHeight: 1.7, flex: 1, marginBottom: "20px" }}>
-                          {p.description || "خامات ممتازة وتسعير دقيق مع إمكانية حسبة السعر تلقائياً."}
-                        </p>
-                        <div style={{ borderTop: "1px solid var(--border)", paddingTop: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div>
-                            <span style={{ fontSize: "11px", color: "var(--foreground-subtle)", display: "block" }}>السعر الأساسي:</span>
-                            <strong style={{ color: "var(--gold-400)", fontSize: "18px", fontFamily: "var(--font-heading)" }}>
-                              {Number(p.base_price).toFixed(2)} ج.م
-                            </strong>
-                          </div>
-                          <Link href={`/products/${p.id}`} className="btn btn-gold btn-sm cursor-pointer" style={{ gap: "6px" }}>
-                            <span>تحديد السعر</span>
-                            <ChevronLeft size={16} />
-                          </Link>
+            {hasDbProducts ? (
+              dbProducts.map((p) => {
+                const hasImage = p.images && p.images.length > 0;
+                return (
+                  <div key={p.id} className="card-premium ornament-card gold-top cursor-pointer" style={{ display: "flex", flexDirection: "column", padding: "0", overflow: "hidden" }}>
+                    {/* Image Thumbnail Header */}
+                    <div style={{
+                      height: "200px",
+                      background: "#040812",
+                      position: "relative",
+                      overflow: "hidden",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderBottom: "1px solid var(--border)"
+                    }}>
+                      {hasImage ? (
+                        <img
+                          src={p.images[0]}
+                          alt={p.name}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", color: "var(--gold-400)" }}>
+                          <Printer size={32} />
+                          <span style={{ fontSize: "12px", color: "var(--foreground-subtle)" }}>مطبعة السلاموني</span>
                         </div>
-                      </div>
+                      )}
+                      <span className="badge badge-navy" style={{ position: "absolute", top: "12px", right: "12px", fontSize: "10.5px" }}>
+                        {p.category}
+                      </span>
                     </div>
-                  );
-                })
-              : STATIC_SERVICES.map((svc) => {
-                  const IconComp = svc.icon;
-                  return (
-                    <div key={svc.id} className="card-premium ornament-card gold-top cursor-pointer" style={{ display: "flex", flexDirection: "column" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "22px" }}>
-                        <div style={{
-                          width: "54px", height: "54px",
-                          background: "rgba(245, 184, 55, 0.12)",
-                          border: "1px solid var(--border-strong)",
-                          borderRadius: "14px",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          color: "var(--gold-400)",
-                          boxShadow: "0 4px 14px rgba(245, 184, 55, 0.15)",
-                        }}>
-                          <IconComp size={26} />
-                        </div>
-                        {svc.badge && (
-                          <span className="badge badge-gold" style={{ fontSize: "11.5px" }}>{svc.badge}</span>
-                        )}
-                      </div>
-                      <h3 style={{ fontSize: "20px", marginBottom: "12px", fontFamily: "var(--font-heading)" }}>
-                        {svc.name}
+
+                    {/* Product Content Body */}
+                    <div style={{ padding: "24px", display: "flex", flexDirection: "column", flex: 1 }}>
+                      <h3 style={{ fontSize: "19px", marginBottom: "10px", fontFamily: "var(--font-heading)", color: "var(--foreground)" }}>
+                        {p.name}
                       </h3>
-                      <p style={{ color: "var(--foreground-muted)", fontSize: "14.5px", lineHeight: 1.8, flex: 1 }}>
-                        {svc.desc}
+                      <p style={{ color: "var(--foreground-muted)", fontSize: "14px", lineHeight: 1.7, flex: 1, marginBottom: "20px" }}>
+                        {p.description || "خامات ممتازة وتسعير دقيق مع إمكانية حسبة السعر تلقائياً."}
                       </p>
-                      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "20px", marginTop: "24px" }}>
-                        <Link href={`/products/${svc.id}`} className="btn btn-outline-gold btn-sm cursor-pointer" style={{ width: "100%", justifyContent: "center" }}>
-                          <span>تحديد المواصفات والسعر</span>
+                      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                          <span style={{ fontSize: "11px", color: "var(--foreground-subtle)", display: "block" }}>السعر الأساسي:</span>
+                          <strong style={{ color: "var(--gold-400)", fontSize: "18px", fontFamily: "var(--font-heading)" }}>
+                            {Number(p.base_price).toFixed(2)} ج.م
+                          </strong>
+                        </div>
+                        <Link href={`/products/${p.id}`} className="btn btn-gold btn-sm cursor-pointer" style={{ gap: "6px" }}>
+                          <span>تحديد السعر</span>
                           <ChevronLeft size={16} />
                         </Link>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })
+            ) : (
+              <div className="card-premium" style={{ gridColumn: "1 / -1", textAlign: "center", padding: "64px 24px" }}>
+                <div style={{ fontSize: "40px", marginBottom: "16px" }}>📦</div>
+                <h3 style={{ fontSize: "20px", fontFamily: "var(--font-heading)", color: "var(--gold-400)", marginBottom: "8px" }}>
+                  لا توجد منتجات بالكتالوج حالياً
+                </h3>
+                <p style={{ color: "var(--foreground-muted)", fontSize: "14.5px" }}>
+                  قم بإضافة منتجات جديدة من لوحة التحكم ليتم عرضها للعملاء هنا فوراً.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* CTA to View All Products page */}

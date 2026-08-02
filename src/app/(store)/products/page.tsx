@@ -44,47 +44,7 @@ export default async function ProductsCatalogPage() {
     console.error("Failed to query DB products for catalog page:", error);
   }
 
-  // Static Fallback products if database is empty
-  if (products.length === 0) {
-    products = [
-      {
-        id: "business-cards",
-        name: "كروت البزنس والشركات الفاخرة",
-        description: "كروت شخصية وتجارية فاخرة ألوان كاملة، سلوفان مات/جلوس، وتأثيرات ذهبي بارز.",
-        basePrice: 150.00,
-        category: "مطبوعات تجارية",
-        images: [],
-        optionsCount: 4,
-      },
-      {
-        id: "corporate-logbooks",
-        name: "دفاتر وسجلات الشركات المخصوصة",
-        description: "دفاتر فواتير وإيصالات وسجلات محاسبية بغلاف مقوى وشعار الشركة.",
-        basePrice: 450.00,
-        category: "سجلات ودفاتر",
-        images: [],
-        optionsCount: 3,
-      },
-      {
-        id: "rollups-banners",
-        name: "استاندات رول أب وبانر المعارض",
-        description: "طباعة فينيل عالية الدقة على شاسيه ألمنيوم متين مع حقيبة نقل أنيقة.",
-        basePrice: 650.00,
-        category: "بانر ورول أب",
-        images: [],
-        optionsCount: 2,
-      },
-      {
-        id: "safety-signage",
-        name: "لوحات السلامة والصحة المهنية",
-        description: "لوحات PVC وألمنيوم للمصانع والمنشآت بألوان طباعة UV المقاومة للشمس والماء.",
-        basePrice: 120.00,
-        category: "لوحات سلامة",
-        images: [],
-        optionsCount: 3,
-      },
-    ];
-  }
+
 
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "100%", minHeight: "100vh" }}>

@@ -23,8 +23,7 @@ async function verifyAuth() {
 const createProductSchema = z.object({
   name: z.string().min(1, "اسم المنتج مطلوب"),
   description: z.string().default(""),
-  base_price: z.number().positive("السعر الأساسي يجب أن يكون أكبر من صفر")
-    .or(z.string().regex(/^\d+(\.\d{1,2})?$/, "تنسيق السعر غير صحيح").transform(Number)),
+  base_price: z.coerce.number({ message: "السعر الأساسي يجب أن يكون رقماً" }).positive("السعر الأساسي يجب أن يكون أكبر من صفر"),
   category: z.string().min(1, "التصنيف مطلوب"),
   images: z.array(z.string()).default([]),
   options: z.array(
@@ -33,7 +32,7 @@ const createProductSchema = z.object({
       values: z.array(
         z.object({
           name: z.string().min(1, "اسم القيمة مطلوب"),
-          price_modifier: z.number().or(z.string().transform(Number)),
+          price_modifier: z.coerce.number().default(0),
         })
       ).default([])
     })
@@ -50,8 +49,10 @@ export async function POST(request: Request) {
     // Validate request payload
     const parsed = createProductSchema.safeParse(body);
     if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      const firstError = Object.values(fieldErrors).flat()[0] || "بيانات المنتج غير صالحة";
       return NextResponse.json(
-        { success: false, errors: parsed.error.format() },
+        { success: false, message: firstError, errors: parsed.error.format() },
         { status: 400 }
       );
     }
