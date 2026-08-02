@@ -26,9 +26,9 @@ export default function LoginPage() {
 
       if (res?.error) {
         setErrorMsg("بيانات الدخول غير صحيحة، يرجى المحاولة مرة أخرى.");
+        setIsLoading(false);
       } else {
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/dashboard";
       }
     } catch (err) {
       setErrorMsg("حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة لاحقاً.");

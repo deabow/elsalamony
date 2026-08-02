@@ -20,7 +20,8 @@ const SESSION_COOKIE_NAMES = [
  * API Route Handler as well (defense-in-depth).
  */
 function hasSessionCookie(request: NextRequest): boolean {
-  return SESSION_COOKIE_NAMES.some((name) => request.cookies.has(name));
+  const allCookies = request.cookies.getAll();
+  return allCookies.some((c) => c.name.includes("session-token"));
 }
 
 export function proxy(request: NextRequest) {

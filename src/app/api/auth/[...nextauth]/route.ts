@@ -63,7 +63,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
     maxAge: 24 * 60 * 60, // 24 hours
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "elsalamony-printing-house-jwt-secret-key-2026-super",
 };
 
 const handler = NextAuth(authOptions);
