@@ -13,23 +13,23 @@ async function main() {
   const adminEmail = "admin@elsalamony.com";
   const defaultPassword = "admin123456";
 
-  const existingAdmin = await prisma.user.findUnique({
+  const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
+  // Force update/upsert so the password for admin@elsalamony.com is ALWAYS admin123456
+  const admin = await prisma.user.upsert({
     where: { email: adminEmail },
+    update: {
+      password: hashedPassword,
+      role: "ADMIN",
+    },
+    create: {
+      email: adminEmail,
+      password: hashedPassword,
+      role: "ADMIN",
+    },
   });
 
-  if (!existingAdmin) {
-    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-    const admin = await prisma.user.create({
-      data: {
-        email: adminEmail,
-        password: hashedPassword,
-        role: "ADMIN",
-      },
-    });
-    console.log(`✅ Admin user created successfully: ${admin.email}`);
-  } else {
-    console.log(`ℹ️ Admin user already exists: ${existingAdmin.email}`);
-  }
+  console.log(`✅ Admin user password reset & verified for: ${admin.email}`);
 }
 
 main()

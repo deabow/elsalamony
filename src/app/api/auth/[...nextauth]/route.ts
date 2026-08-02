@@ -16,8 +16,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error("البريد الإلكتروني وكلمة المرور مطلوبان.");
         }
 
+        const email = credentials.email.trim().toLowerCase();
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email },
         });
 
         if (!user) {
