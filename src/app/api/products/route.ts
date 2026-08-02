@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
 
@@ -63,7 +62,7 @@ export async function POST(request: Request) {
       data: {
         name,
         description,
-        base_price: new Prisma.Decimal(base_price),
+        base_price,
         category,
         options: {
           create: options.map((opt) => ({
@@ -171,7 +170,7 @@ export async function PATCH(request: Request) {
     if (description !== undefined) dataToUpdate.description = description;
     if (category !== undefined) dataToUpdate.category = category;
     if (base_price !== undefined) {
-      dataToUpdate.base_price = new Prisma.Decimal(base_price);
+      dataToUpdate.base_price = base_price;
     }
 
     const product = await prisma.product.update({
