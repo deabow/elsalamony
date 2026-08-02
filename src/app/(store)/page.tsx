@@ -375,11 +375,22 @@ export default async function StoreHome() {
           </div>
 
           {/* CTA to View All Products page */}
-          <div style={{ textAlign: "center", marginTop: "48px" }}>
-            <Link href="/products" className="btn btn-gold btn-lg cursor-pointer" style={{ gap: "8px" }}>
-              <Printer size={20} />
-              <span>عرض كافة منتجات وخدمات الكتالوج</span>
-              <ChevronLeft size={18} />
+          <div style={{ textAlign: "center", marginTop: "44px", padding: "0 16px" }}>
+            <Link 
+              href="/products" 
+              className="btn btn-gold btn-lg cursor-pointer" 
+              style={{ 
+                gap: "8px", 
+                maxWidth: "100%", 
+                display: "inline-flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                textAlign: "center" 
+              }}
+            >
+              <Printer size={18} />
+              <span>تصفح جميع منتجات الكتالوج</span>
+              <ChevronLeft size={16} />
             </Link>
           </div>
         </div>

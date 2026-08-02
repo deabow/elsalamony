@@ -598,3 +598,18 @@ textarea.form-control { resize: vertical; min-height: 120px; }
     display: none !important;
   }
 }
+
+@media (max-width: 576px) {
+  .btn-lg {
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+  .btn {
+    max-width: 100% !important;
+  }
+}
